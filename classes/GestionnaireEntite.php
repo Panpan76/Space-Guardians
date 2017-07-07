@@ -20,7 +20,7 @@
    *
    * @return array
    */
-  public function select($entite, $where = array()){    if(in_array($entite, array_keys($this->correspondances))){      $infos = $this->correspondances[$entite];      $table = $infos['table'];      if(!empty($where)){        // On cherche un cas existant        $res = $this->dejaInstancie($entite, $where);        if(is_object($res)){          return array($res);        }        $recherche = array();        // On construit les paramètre de recherche        foreach($where as $attribut => $valeur){          $var = $infos['variables'][$attribut]['colonne'];          $recherche[] = "$var = '$valeur'";        }        $where = "WHERE ".implode(' AND ', $recherche);      }
+  public function select($entite, $where = array()){    if(in_array($entite, array_keys($this->correspondances))){      $infos = $this->correspondances[$entite];      $table = $infos['table'];      if(!empty($where)){        // On cherche un cas existant        $res = $this->dejaInstancie($entite, $where);        if(is_object($res)){          return array($res);        }        $recherche = array();        // On construit les paramètre de recherche        foreach($where as $attribut => $valeur){          $var = $infos['variables'][$attribut]['colonne'];          $recherche[] = "$var = '$valeur'";        }        $where = "WHERE ".implode(' AND ', $recherche);      }      else{        $where = '';      }
       // La requête
       $requete = "SELECT * FROM $table $where";
       $sql = $this->pdo->prepare($requete);      // On mémorise la requête et si elle a réussi ou échoué      $this->requetes[] = array(        'succes' => $sql->execute(),        'requete' => $requete      );      $resultats = array();      while($res = $sql->fetch(PDO::FETCH_ASSOC)){        $obj = new $entite();        // On stock le résultat dans $this->entites pour éviter de le créer à nouveau        $resultats[] = $this->entites[$entite][] = $obj;        // On charge dynamiquement l'objet        $this->charger($obj, $res);      }      return $resultats;    }    else{      $classe = get_class($entite);      die("La classe $classe n'a définie aucune correspondances");    }  }
@@ -36,40 +36,54 @@
       $valeurs  = array();
       foreach($infos['variables'] as $variable => $base){
         $var = $obj->$variable;
-        $champs[] = $base['colonne'];
-        switch($base['type']){
-          case 'PK':
-            if(isset($var)){
+        if(isset($base['colonne'])){
+          $champs[] = $base['colonne'];
+          switch($base['type']){
+            case 'PK':
+              if(isset($var)){
+                $valeurs[] = $var;
+              }
+              else{
+                array_pop($champs);
+              }
+              break;
+
+            case 'string':
+              $valeurs[] = "'$var'";
+              break;
+
+            case 'datetime':
+              $valeurs[] = "'$var'";
+              break;
+
+            case 'objet':
+              if(is_object($obj->$variable)){
+                $valeurs[] = $var->id;
+              }
+              else{
+                $valeurs[] = $var; // L'id
+              }
+              break;
+
+            default:
               $valeurs[] = $var;
-            }
-            else{
-              array_pop($champs);
-            }
-            break;
-
-          case 'string':
-            $valeurs[] = "'$var'";
-            break;
-
-          case 'objet':
-            if(is_object($obj->$variable)){
-              $valeurs[] = $var->id;
-            }
-            else{
-              $valeurs[] = $var; // L'id
-            }
-            break;
-
-          default:
-            $valeurs[] = $var;
-            break;
+              break;
+          }
         }
       }
+
+      $update = array();
+      for($i = 0; $i < count($champs); $i++){
+        $update[] = $champs[$i].' = '.$valeurs[$i];
+      }
+
+
       $champs   = '('.implode(', ', $champs).')';
       $valeurs  = '('.implode(', ', $valeurs).')';
+      $update  = implode(', ', $update);
 
       // La requête
-      $requete = "REPLACE INTO $table $champs VALUES $valeurs";
+      $requete = "INSERT INTO $table $champs VALUES $valeurs ON DUPLICATE KEY UPDATE $update";
       $sql = $this->pdo->prepare($requete);
 
       $succes = $sql->execute();
