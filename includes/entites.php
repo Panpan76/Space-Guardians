@@ -40,6 +40,12 @@ $correspondances['Joueur'] = array(
       'type'    => 'datetime',
       'colonne' => 'date_inscription'
     ),
+    'race' => array(
+      'type'    => 'objet',
+      'entite'  => 'Race',
+      'colonne' => 'race_ID',
+      'relation'=> 'n-1'
+    ),
     'amis' => array(
       'type'    => 'objet',
       'entite'  => 'Joueur',
@@ -48,6 +54,19 @@ $correspondances['Joueur'] = array(
       'to'      => 'ami_ID',
       'relation'=> 'n-n'
     ),
+  )
+);
+$correspondances['Race'] = array(
+  'table'     => 'race',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'race_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    )
   )
 );
 ?>

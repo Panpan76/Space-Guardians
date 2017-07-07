@@ -15,6 +15,7 @@ class Joueur extends EntiteMere{
   protected $pseudo;
   protected $motDePasse;
   protected $dateInscription;
+  protected $race;
   protected $amis;
 }
 
