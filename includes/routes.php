@@ -5,7 +5,7 @@ $routes = array(
     'controlleur' => 'ControlleurDefaut',
     'methode'     => 'index'
   ),
-  'joueur\/([^\/]+)' => array(
+  'joueur\/(\d+)' => array(
     'controlleur' => 'ControlleurJoueur',
     'methode'     => 'voir'
   ),
@@ -20,6 +20,14 @@ $routes = array(
   'deconnexion' => array(
     'controlleur' => 'ControlleurJoueur',
     'methode'     => 'deconnexion'
+  ),
+  'galaxie\/(\d+)' => array(
+    'controlleur' => 'ControlleurGalaxie',
+    'methode'     => 'voir'
+  ),
+  'galaxie\/nouvelle' => array(
+    'controlleur' => 'ControlleurGalaxie',
+    'methode'     => 'nouvelle'
   )
 );
 

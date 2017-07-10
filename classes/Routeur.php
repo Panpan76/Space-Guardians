@@ -196,7 +196,7 @@ class Routeur{
    */
   private function cleanRoute($route){
     $route = str_replace('$', '', $route);
-    $route = str_replace('([^\/]+)', '{$var}', $route);
+    $route = preg_replace('/(\(.*\))/', '{$var}', $route);
     $route = str_replace('^', '', $route);
     $route = str_replace('\/', '/', $route);
     return $route;
