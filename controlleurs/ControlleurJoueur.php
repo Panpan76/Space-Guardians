@@ -19,7 +19,7 @@ class ControlleurJoueur extends Controlleur{
    */
   public function voir($id){
     $ge = GestionnaireEntite::getInstance();
-    $joueur = $ge->select('Joueur', array('id' => $id))[0];
+    $joueur = $ge->select('Joueur', array('id' => $id))->getOne();
 
     $this->render('joueur/voir.php', $joueur->pseudo, array(
       'joueur' => $joueur
@@ -54,7 +54,7 @@ class ControlleurJoueur extends Controlleur{
 
   public function inscription(){
     $ge = GestionnaireEntite::getInstance();
-    $races = $ge->select('Race');
+    $races = $ge->select('Race')->getAll();
 
     $joueur = new Joueur();
     $message = '';
