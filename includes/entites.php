@@ -69,4 +69,63 @@ $correspondances['Race'] = array(
     )
   )
 );
+$correspondances['Galaxie'] = array(
+  'table'     => 'galaxie',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'galaxie_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+    'largeur' => array(
+      'type'    => 'int',
+      'colonne' => 'largeur'
+    ),
+    'hauteur' => array(
+      'type'    => 'int',
+      'colonne' => 'hauteur'
+    ),
+    'systemesSolaires' => array(
+      'type'    => 'objet',
+      'entite'  => 'SystemeSolaire',
+      'lien'    => 'galaxie',
+      'relation'=> '1-n'
+    )
+  )
+);
+$correspondances['SystemeSolaire'] = array(
+  'table'     => 'systeme_solaire',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'systeme_solaire_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+    'galaxie' => array(
+      'type'    => 'objet',
+      'entite'  => 'Galaxie',
+      'colonne' => 'race_ID',
+      'colonne' => 'galaxie_ID',
+      'relation'=> 'n-1'
+    ),
+    'centreX' => array(
+      'type'    => 'int',
+      'colonne' => 'centre_x'
+    ),
+    'centreY' => array(
+      'type'    => 'int',
+      'colonne' => 'centre_y'
+    ),
+    'rayon' => array(
+      'type'    => 'int',
+      'colonne' => 'rayon'
+    )
+  )
+);
 ?>
