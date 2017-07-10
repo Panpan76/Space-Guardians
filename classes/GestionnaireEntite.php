@@ -100,7 +100,19 @@
         'requete' => $requete
       );
 
+      // Si on a déjà un ID, c'est que c'était un update, sinon un insert
+      if(isset($obj->id) && !empty($obj->id)){
+        $methode = 'postUpdate';
+      }
+      else{
+        $methode = 'postInsert';
+      }
+
       $obj->id = $this->pdo->lastInsertId();
+
+      if(method_exists($obj, $methode)){
+        $obj->$methode();
+      }
 
       return $succes;
     }
