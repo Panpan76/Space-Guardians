@@ -16,6 +16,10 @@ $routes = array(
   'inscription' => array(
     'controlleur' => 'ControlleurJoueur',
     'methode'     => 'inscription'
+  ),
+  'deconnexion' => array(
+    'controlleur' => 'ControlleurJoueur',
+    'methode'     => 'deconnexion'
   )
 );
 

@@ -2,7 +2,7 @@
 require_once DOSSIER_VUES.'/base.php';
 
 ?>
-
+<?= $message; ?>
 <form action="" method="post">
   <table>
     <tr>
@@ -19,3 +19,4 @@ require_once DOSSIER_VUES.'/base.php';
     </tr>
   </table>
 </form>
+<a href="<?= lien('inscription'); ?>">Pas encore inscrit ?</a>

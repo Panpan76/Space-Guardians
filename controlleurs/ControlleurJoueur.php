@@ -29,8 +29,27 @@ class ControlleurJoueur extends Controlleur{
 
 
   public function login(){
+    $ge = GestionnaireEntite::getInstance();
 
-    $this->render('joueur/login.php', 'Connexion');
+    $message = '';
+
+    if($data = $this->aDonnees()){
+      $joueur = $ge->select('Joueur', array(
+        'pseudo'      => $data['pseudo'],
+        'motDePasse'  => md5($data['mdp'])
+      ))->getOne();
+
+      if(is_object($joueur)){
+        $this->connexion($joueur);
+      }
+      else{
+        $message = "Identifiants incorrect";
+      }
+    }
+
+    $this->render('joueur/login.php', 'Connexion', array(
+      'message' => $message
+    ));
   }
 
   public function inscription(){
@@ -47,14 +66,16 @@ class ControlleurJoueur extends Controlleur{
       $joueur->race             = $data['race'];
 
       if($ge->persist($joueur)){
-        // TODO On se connecte
-        var_dump($joueur);
-        // TODO On redirige
+        // On récupère de-nouveau notre joueur pour avoir toutes les relations qui ont été ajouté par le SGBD
+        $joueur = $ge->select('Joueur', array(
+          'pseudo'      => $data['pseudo']
+        ))->getOne();
+
+        $this->connexion($joueur);
       }
       else{
         $message = "Une erreur est survenue";
       }
-      var_dump($data);
     }
 
     $this->render('joueur/inscription.php', 'Inscription', array(
@@ -62,6 +83,25 @@ class ControlleurJoueur extends Controlleur{
       'joueur'  => $joueur,
       'message' => $message
     ));
+  }
+
+
+  public function deconnexion(){
+    unset($_SESSION['joueur']);
+    Routeur::redirect('');
+  }
+
+
+  /**
+   * Permet de gérer la connexion d'un joueur
+   *
+   * @param Joueur $joueur Joueur devant être connecté
+   *
+   * @return boolean
+   */
+  private function connexion($joueur){
+    $_SESSION['joueur'] = $joueur;
+    Routeur::redirect('');
   }
 
 }

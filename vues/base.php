@@ -14,7 +14,11 @@ $global = Glob::getInstance();
     <title><?= $titre; ?></title>
   </head>
   <body>
-
+<?php
+if(estCo()){
+  require_once 'menu.php';
+}
+?>
 
 <?php
 if(DEBUG){
