@@ -70,3 +70,5 @@ if(DEBUG){
 <?php
 }
 ?>
+
+<div id="page">

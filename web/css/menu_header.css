@@ -4,6 +4,7 @@
   background: #242c33;
   padding-left: 10px;
   padding-right: 10px;
+  z-index: 10;
 }
 
 .menu.header>div{
@@ -31,27 +32,24 @@
   cursor: pointer;
 }
 
-@keyframes menuDeroulant{
-  from{
-    top: -120px;
-  }
-  to{
-    top: 0px;
-  }
+.menu.header>div>div>a{
+  position: relative;
+  z-index: 10;
+  display: block;
+  background: #242c33;
 }
 
 .menu.header div.deroulant:hover>div{
-  animation-name: menuDeroulant;
-  animation-duration: 1s;
   top: 0px;
 }
 
 .menu.header div.deroulant>div{
-  top: -120px;
-  z-index: -1;
-  margin-left: -10px;
+  top: -60px;
+  margin-left: -5px;
   padding-left: 20px;
   padding-right: 20px;
   position: relative;
+  z-index: 5;
+  transition: top 1s;
   background: #242c33;
 }

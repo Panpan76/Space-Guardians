@@ -10,3 +10,10 @@ a{
   text-decoration: none;
   color: inherit;
 }
+
+div#page{
+  position: absolute;
+  top: 60px;
+  left: 70px;
+  padding: 15px;
+}

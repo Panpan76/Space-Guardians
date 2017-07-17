@@ -18,6 +18,11 @@ class Planete extends EntiteMere{
   protected $y;
   protected $proprietaire;
   protected $batiments;
+
+  public function __tostring(){
+    $systeme = $this->systemeSolaire;
+    return "$this->nom ($this->x:$this->y:$systeme->id)";
+  }
 }
 
 ?>
