@@ -36,6 +36,19 @@ class Controlleur{
 
 
   /**
+   * Permet de savoir si des données ont été passées
+   *
+   * @return array|false
+   */
+  public function aDonnees(){
+    if(isset($this->data) && !empty($this->data)){
+      return $this->data;
+    }
+    return false;
+  }
+
+
+  /**
    * Permet de charger un rendu de page
    *
    * @param string  $page     Vue à charger

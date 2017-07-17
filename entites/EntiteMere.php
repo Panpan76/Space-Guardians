@@ -28,6 +28,14 @@ class EntiteMere{
       die("L'attribut $attribut n'existe pas pour la classe $classe");
     }
   }
+
+  public function getJSON(){
+    $json = array();
+    foreach($this as $key => $value) {
+        $json[$key] = $value;
+    }
+    return json_encode($json);
+  }
 }
 
 ?>
