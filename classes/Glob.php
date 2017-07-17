@@ -53,7 +53,7 @@ class Glob{
       }
       catch(Exception $e){
         // On capture une éventuelle erreur
-        die($e);
+        echo $e;
       }
     }
     // On retourne l'instance de Glob

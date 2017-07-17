@@ -15,7 +15,7 @@ class EntiteMere{
       return $this->$attribut;
     }
     else{
-      die("L'attribut $attribut n'existe pas pour la classe $classe");
+      echo "L'attribut $attribut n'existe pas pour la classe $classe";
     }
   }
 
@@ -25,14 +25,14 @@ class EntiteMere{
       $this->$attribut = $valeur;
     }
     else{
-      die("L'attribut $attribut n'existe pas pour la classe $classe");
+      echo "L'attribut $attribut n'existe pas pour la classe $classe";
     }
   }
 
   public function getJSON(){
     $json = array();
     foreach($this as $key => $value) {
-        $json[$key] = $value;
+      $json[$key] = $value;
     }
     return json_encode($json);
   }
