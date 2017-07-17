@@ -74,14 +74,14 @@ class Routeur{
 
 
   /**
-   * Permet d'effectuer une redirection
+   * Permet de charger une page
    *
    * @param string      $url    URL demandé par l'utilisateur
    * @param array|null  $data   Données liées à la requête
    *
    * @return void
    */
-  public function redirect($url, $data = null){
+  public function charge($url, $data = null){
     // On récupère les informations de la page
     $infos = $this->getPage($url);
 
@@ -103,6 +103,18 @@ class Routeur{
     // On appelle la méthode du controlleur avec les paramètres
     call_user_func_array(array($controlleur, $methode), $params);
     die();
+  }
+
+  /**
+   * Permet d'effectuer une redirection
+   *
+   * @param string $route Router à charger
+   *
+   * @return void
+   */
+  public static function redirect($route){
+    $route = URL_HOST.$route;
+    header("Location: $route");
   }
 
 
@@ -184,7 +196,7 @@ class Routeur{
    */
   private function cleanRoute($route){
     $route = str_replace('$', '', $route);
-    $route = str_replace('([^\/]+)', '{$var}', $route);
+    $route = preg_replace('/(\(.*\))/', '{$var}', $route);
     $route = str_replace('^', '', $route);
     $route = str_replace('\/', '/', $route);
     return $route;

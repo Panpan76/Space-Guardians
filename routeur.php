@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
@@ -17,8 +18,13 @@ $parametres = array_merge($_GET, $_POST);
 // On récupère une instance de Routeur
 $routeur = Routeur::getInstance();
 
+if(!estCo() && $url != 'login' && $url != 'inscription'){
+  $url = 'login';
+}
+
+
 // On demande la page voulue avec les données de la requête
-$routeur->redirect($url, $parametres);
+$routeur->charge($url, $parametres);
 
 
 ?>
