@@ -54,6 +54,12 @@ $correspondances['Joueur'] = array(
       'to'      => 'ami_ID',
       'relation'=> 'n-n'
     ),
+    'planetes' => array(
+      'type'    => 'objet',
+      'entite'  => 'Planete',
+      'lien'    => 'proprietaire',
+      'relation'=> '1-n'
+    ),
   )
 );
 $correspondances['Race'] = array(
@@ -107,16 +113,15 @@ $correspondances['SystemeSolaire'] = array(
       'type'    => 'string',
       'colonne' => 'nom'
     ),
-    'galaxie' => array(
-      'type'    => 'objet',
-      'entite'  => 'Galaxie',
-      'colonne' => 'race_ID',
-      'colonne' => 'galaxie_ID',
-      'relation'=> 'n-1'
-    ),
     'centreX' => array(
       'type'    => 'int',
       'colonne' => 'centre_x'
+    ),
+    'galaxie' => array(
+      'type'      => 'objet',
+      'entite'    => 'Galaxie',
+      'colonne'   => 'galaxie_ID',
+      'relation'  => 'n-1'
     ),
     'centreY' => array(
       'type'    => 'int',
@@ -125,6 +130,45 @@ $correspondances['SystemeSolaire'] = array(
     'rayon' => array(
       'type'    => 'int',
       'colonne' => 'rayon'
+    ),
+    'planetes' => array(
+      'type'    => 'objet',
+      'entite'  => 'Planete',
+      'lien'    => 'systemeSolaire',
+      'relation'=> '1-n'
+    )
+  )
+);
+$correspondances['Planete'] = array(
+  'table'     => 'planete',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'planete_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+    'systemeSolaire' => array(
+      'type'    => 'objet',
+      'entite'  => 'SystemeSolaire',
+      'colonne' => 'systeme_solaire_ID',
+      'relation'=> 'n-1'
+    ),
+    'x' => array(
+      'type'    => 'int',
+      'colonne' => 'coordonnees_x'
+    ),
+    'y' => array(
+      'type'    => 'int',
+      'colonne' => 'coordonnees_y'
+    ),
+    'proprietaire' => array(
+      'type'      => 'objet',
+      'entite'    => 'Joueur',
+      'colonne'   => 'proprietaire_ID',
+      'relation'  => 'n-1'
     )
   )
 );

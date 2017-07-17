@@ -22,9 +22,6 @@ if(!estCo() && $url != 'login' && $url != 'inscription'){
   $url = 'login';
 }
 
-if(estCo()){
-  $_SESSION['joueur'] = cast($_SESSION['joueur'], 'Joueur');
-}
 
 // On demande la page voulue avec les données de la requête
 $routeur->charge($url, $parametres);

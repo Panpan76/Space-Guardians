@@ -16,6 +16,11 @@ class GestionnaireEntiteResultats{
   }
 
 
+  public function aleatoire(){
+    shuffle($this->resultats);
+    return $this;
+  }
+
   public function getOne($id = 0){
     if(!isset($this->resultats[$id])){
       return null;

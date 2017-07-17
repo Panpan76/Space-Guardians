@@ -19,7 +19,7 @@ class ControlleurJoueur extends Controlleur{
    */
   public function voir($id){
     $ge = GestionnaireEntite::getInstance();
-    $joueur = $ge->select('Joueur', array('id' => $id))->getOne();
+    $joueur = $ge->select('Joueur', array('id' => $id), 0b0111)->getOne();
 
     $this->render('joueur/voir.php', $joueur->pseudo, array(
       'joueur' => $joueur
@@ -100,7 +100,7 @@ class ControlleurJoueur extends Controlleur{
    * @return boolean
    */
   private function connexion($joueur){
-    $_SESSION['joueur'] = $joueur;
+    $_SESSION['joueur'] = $joueur->id;
     Routeur::redirect('');
   }
 

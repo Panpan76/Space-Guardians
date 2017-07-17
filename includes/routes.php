@@ -28,6 +28,14 @@ $routes = array(
   'galaxie\/nouvelle' => array(
     'controlleur' => 'ControlleurGalaxie',
     'methode'     => 'nouvelle'
+  ),
+  'systemeSolaire\/json\/(\d+)' => array(
+    'controlleur' => 'ControlleurSystemeSolaire',
+    'methode'     => 'getJSON'
+  ),
+  'systemeSolaire\/(\d+)' => array(
+    'controlleur' => 'ControlleurSystemeSolaire',
+    'methode'     => 'voir'
   )
 );
 
