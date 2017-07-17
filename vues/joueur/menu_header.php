@@ -6,6 +6,6 @@
         <div><a href="<?= lien('deconnexion'); ?>">Déconnexion</a></div>
       </div>
     </div>
-    <div><?= $planete; ?></div>
+    <div><a href="<?= lien("planete/$planete->id"); ?>"><?= $planete; ?></a></div>
   </div>
 </div>
