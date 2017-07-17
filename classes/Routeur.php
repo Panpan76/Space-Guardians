@@ -65,7 +65,7 @@ class Routeur{
       }
       catch(Exception $e){
         // On capture une éventuelle erreur
-        die($e);
+        echo $e;
       }
     }
     // On retourne l'instance de Routeur
@@ -102,7 +102,7 @@ class Routeur{
 
     // On appelle la méthode du controlleur avec les paramètres
     call_user_func_array(array($controlleur, $methode), $params);
-    die();
+    return null;
   }
 
   /**
