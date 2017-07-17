@@ -5,7 +5,10 @@ $global = Glob::getInstance();
 <html>
   <head>
     <meta charset="utf-8" />
+    <link rel='stylesheet' href='css/base.css' />
     <link rel='stylesheet' href='css/couleurs.css' />
+    <link rel='stylesheet' href='css/menu_header.css' />
+    <link rel='stylesheet' href='css/menu.css' />
     <?php
     if(DEBUG){
       echo "<link rel='stylesheet' href='css/debug.css' />";
@@ -17,6 +20,7 @@ $global = Glob::getInstance();
   <body>
 <?php
 if(estCo()){
+  ControlleurJoueur::menuHeader();
   require_once 'menu.php';
 }
 ?>
@@ -66,3 +70,5 @@ if(DEBUG){
 <?php
 }
 ?>
+
+<div id="page">
