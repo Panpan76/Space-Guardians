@@ -1,0 +1,57 @@
+.menu.header{
+  height: 60px;
+  line-height: 60px;
+  background: #242c33;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.menu.header>div{
+  display: inline-flex;
+}
+
+.menu.header>div img{
+  vertical-align: middle;
+}
+
+.menu.header>div.left{
+  float: left;
+}
+
+.menu.header>div.right{
+  float: right;
+}
+
+.menu.header>div>div{
+  color: #768389;
+  padding-left: 5px;
+  padding-right: 15px;
+  font-size: 1.25em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@keyframes menuDeroulant{
+  from{
+    top: -120px;
+  }
+  to{
+    top: 0px;
+  }
+}
+
+.menu.header div.deroulant:hover>div{
+  animation-name: menuDeroulant;
+  animation-duration: 1s;
+  top: 0px;
+}
+
+.menu.header div.deroulant>div{
+  top: -120px;
+  z-index: -1;
+  margin-left: -10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  position: relative;
+  background: #242c33;
+}

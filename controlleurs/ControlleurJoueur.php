@@ -104,6 +104,25 @@ class ControlleurJoueur extends Controlleur{
     Routeur::redirect('');
   }
 
+
+
+  /**
+   * Permet de gérer la menu pour le joueur connecté
+   *
+   * @return boolean
+   */
+  public static function menuHeader(){
+    $ge = GestionnaireEntite::getInstance();
+    $joueur = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::PARENTS+$ge::ENFANTS+$ge::FRERES)->getOne();
+
+    $controlleur = new Controlleur();
+
+    $controlleur->render('joueur/menu_header.php', '', array(
+      'joueur'  => $joueur
+    ));
+  }
+
+
 }
 
 
