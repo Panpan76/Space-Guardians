@@ -37,7 +37,7 @@ class ControlleurJoueur extends Controlleur{
       $joueur = $ge->select('Joueur', array(
         'pseudo'      => $data['pseudo'],
         'motDePasse'  => md5($data['mdp'])
-      ))->getOne();
+      ), $ge::ENFANTS)->getOne();
 
       if(is_object($joueur)){
         $this->connexion($joueur);
@@ -100,9 +100,31 @@ class ControlleurJoueur extends Controlleur{
    * @return boolean
    */
   private function connexion($joueur){
-    $_SESSION['joueur'] = $joueur->id;
+    $_SESSION['joueur']   = $joueur->id;
+    $_SESSION['planete']  = $joueur->planetes[0]->id;
     Routeur::redirect('');
   }
+
+
+
+  /**
+   * Permet de gérer la menu pour le joueur connecté
+   *
+   * @return boolean
+   */
+  public static function menuHeader(){
+    $ge = GestionnaireEntite::getInstance();
+    $joueur   = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::PARENTS+$ge::ENFANTS+$ge::FRERES)->getOne();
+    $planete  = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::PARENTS+$ge::ENFANTS)->getOne();
+    
+    $controlleur = new Controlleur();
+
+    $controlleur->render('joueur/menu_header.php', '', array(
+      'joueur'  => $joueur,
+      'planete' => $planete
+    ));
+  }
+
 
 }
 
