@@ -114,7 +114,12 @@
                   $val = $val->format('Y-m-d H:i:s');
                 }
               }
-              $val = "'$val'";
+              if(is_null($val)){
+                $val = 'null';
+              }
+              else{
+                $val = "'$val'";
+              }
 
               $valeursMany[] = $val;
             }
