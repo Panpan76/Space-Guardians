@@ -44,7 +44,14 @@ function formatNb(nb){
   var nombre = parseInt(nb.toString().split('.')[0]);
   var str = '';
   while(nombre >= 1000){
-    str = (nombre % 1000)+' '+str;
+    var n = (nombre % 1000);
+    if(n < 10){
+      n = '00'+n;
+    }
+    else if(n < 100){
+      n = '0'+n;
+    }
+    str = n+' '+str;
     nombre = parseInt(nombre / 1000);
   }
   str = (nombre % 1000)+' '+str;

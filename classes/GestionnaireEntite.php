@@ -168,14 +168,13 @@
       );
 
       // Si on a déjà un ID, c'est que c'était un update, sinon un insert
-      if(isset($obj->id) && !empty($obj->id)){
+      if(property_exists($obj, 'id') && $obj->id != null){
         $methode = 'postUpdate';
       }
       else{
+        $obj->id = $this->pdo->lastInsertId();
         $methode = 'postInsert';
       }
-
-      $obj->id = $this->pdo->lastInsertId();
 
       if(method_exists($obj, $methode)){
         $obj->$methode();

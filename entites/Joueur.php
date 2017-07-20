@@ -18,7 +18,23 @@ class Joueur extends EntiteMere{
   protected $race;
   protected $amis;
   protected $planetes;
+  protected $technologies;
 
+
+  public function postSelect(){
+
+
+    if(($technologie = $this->getRechercheEnCours()) != null){
+      if($technologie->tempsRestant() <= 0){
+        $technologie->niveau++;
+        $technologie->date_recherche = new DateTime();
+        $technologie->date_amelioration = null;
+        $ge = GestionnaireEntite::getInstance();
+        $ge->persist($this);
+        $technologie->postSelect();
+      }
+    }
+  }
 
   public function postInsert(){
     $ge = GestionnaireEntite::getInstance();
@@ -27,6 +43,25 @@ class Joueur extends EntiteMere{
     $planete->proprietaire = $this;
 
     $ge->persist($planete);
+  }
+
+
+  public function getRechercheEnCours(){
+    foreach($this->technologies as $technologie){
+      if(!is_null($technologie->date_amelioration)){
+        return $technologie;
+      }
+    }
+    return null;
+  }
+
+  public function recherchePossible(){
+    foreach($this->technologies as $technologie){
+      if(!is_null($technologie->date_amelioration)){ // Si une recherche est déjà en cours
+        return false;
+      }
+    }
+    return true;
   }
 }
 

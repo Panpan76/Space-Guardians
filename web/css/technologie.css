@@ -1,0 +1,36 @@
+.technologie{
+	width: 45%;
+	border: 1px solid black;
+	border-radius: 35px;
+  overflow: hidden;
+}
+
+.technologie>*{
+  padding-left: 35px;
+  padding-right: 35px;
+}
+
+.technologie>.nom{
+  border-bottom: 1px solid black;
+}
+
+.technologie>.image{
+	float: right;
+	height: 75px;
+}
+
+.technologie>table{
+  border-collapse: collapse;
+  width: 80%;
+  text-align: center;
+  font-size: 0.7em;
+}
+
+.technologie>.couts{
+	font-size: 0.85em;
+	line-height: 40px;
+}
+
+.recherche>div{
+	display: inline-flex;
+}

@@ -60,6 +60,14 @@ $correspondances['Joueur'] = array(
       'lien'    => 'proprietaire',
       'relation'=> '1-n'
     ),
+    'technologies' => array(
+      'type'    => 'objet',
+      'entite'  => 'Technologie',
+      'byTable' => 'joueur_technologie',
+      'from'    => 'joueur_ID',
+      'to'      => 'technologie_ID',
+      'relation'=> 'n-n'
+    ),
   )
 );
 $correspondances['Race'] = array(
@@ -236,6 +244,59 @@ $correspondances['Batiment'] = array(
       'entite'  => 'Ressource',
       'byTable' => 'ressource_batiment',
       'from'    => 'batiment_ID',
+      'to'      => 'ressource_ID',
+      'relation'=> 'n-n'
+    ),
+  )
+);
+
+$correspondances['TypeTechnologie'] = array(
+  'table'     => 'type_technologie',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'type_technologie_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+  )
+);
+$correspondances['Technologie'] = array(
+  'table'     => 'technologie',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'technologie_ID'
+    ),
+    'typeTechnologie' => array(
+      'type'    => 'objet',
+      'entite'  => 'TypeTechnologie',
+      'colonne' => 'type_technologie_ID',
+      'relation'=> 'n-1'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+    'description' => array(
+      'type'    => 'string',
+      'colonne' => 'description'
+    ),
+    'image' => array(
+      'type'    => 'string',
+      'colonne' => 'image'
+    ),
+    'temps' => array(
+      'type'    => 'int',
+      'colonne' => 'temps_base'
+    ),
+    'ressources' => array(
+      'type'    => 'objet',
+      'entite'  => 'Ressource',
+      'byTable' => 'ressource_technologie',
+      'from'    => 'technologie_ID',
       'to'      => 'ressource_ID',
       'relation'=> 'n-n'
     ),
