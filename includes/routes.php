@@ -36,6 +36,18 @@ $routes = array(
   'systemeSolaire\/(\d+)' => array(
     'controlleur' => 'ControlleurSystemeSolaire',
     'methode'     => 'voir'
+  ),
+  'planete\/(\d+)' => array(
+    'controlleur' => 'ControlleurPlanete',
+    'methode'     => 'voir'
+  ),
+  'batiment' => array(
+    'controlleur' => 'ControlleurBatiment',
+    'methode'     => 'index'
+  ),
+  'batiment\/construire\/(\d+)' => array(
+    'controlleur' => 'ControlleurBatiment',
+    'methode'     => 'construire'
   )
 );
 

@@ -169,7 +169,118 @@ $correspondances['Planete'] = array(
       'entite'    => 'Joueur',
       'colonne'   => 'proprietaire_ID',
       'relation'  => 'n-1'
-    )
+    ),
+    'batiments' => array(
+      'type'    => 'objet',
+      'entite'  => 'Batiment',
+      'byTable' => 'planete_batiment',
+      'from'    => 'planete_ID',
+      'to'      => 'batiment_ID',
+      'relation'=> 'n-n'
+    ),
+    'stocks' => array(
+      'type'    => 'objet',
+      'entite'  => 'Ressource',
+      'byTable' => 'ressource_planete',
+      'from'    => 'planete_ID',
+      'to'      => 'ressource_ID',
+      'relation'=> 'n-n'
+    ),
+  )
+);
+
+$correspondances['TypeBatiment'] = array(
+  'table'     => 'type_batiment',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'type_batiment_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+  )
+);
+$correspondances['Batiment'] = array(
+  'table'     => 'batiment',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'batiment_ID'
+    ),
+    'typeBatiment' => array(
+      'type'    => 'objet',
+      'entite'  => 'TypeBatiment',
+      'colonne' => 'type_batiment_ID',
+      'relation'=> 'n-1'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+    'description' => array(
+      'type'    => 'string',
+      'colonne' => 'description'
+    ),
+    'image' => array(
+      'type'    => 'string',
+      'colonne' => 'image'
+    ),
+    'temps' => array(
+      'type'    => 'int',
+      'colonne' => 'temps_base'
+    ),
+    'ressources' => array(
+      'type'    => 'objet',
+      'entite'  => 'Ressource',
+      'byTable' => 'ressource_batiment',
+      'from'    => 'batiment_ID',
+      'to'      => 'ressource_ID',
+      'relation'=> 'n-n'
+    ),
+  )
+);
+
+$correspondances['TypeRessource'] = array(
+  'table'     => 'type_ressource',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'type_ressource_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+  )
+);
+
+$correspondances['Ressource'] = array(
+  'table'     => 'ressource',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'ressource_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+    'image' => array(
+      'type'    => 'string',
+      'colonne' => 'image'
+    ),
+    'coefficient' => array(
+      'type'    => 'int',
+      'colonne' => 'coefficient'
+    ),
+    'typeRessource' => array(
+      'type'    => 'objet',
+      'entite'  => 'TypeRessource',
+      'colonne' => 'type_ressource_ID',
+      'relation'=> 'n-1'
+    ),
   )
 );
 ?>

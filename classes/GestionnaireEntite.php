@@ -20,7 +20,7 @@
    *
    * @return array
    */
-  public function select($entite, $where = array(), $autre = self::PARENTS, $alea = false, $limit = 0){    if(!in_array($entite, array_keys($this->correspondances))){      $classe = get_class($entite);      echo "La classe $classe n'a définie aucune correspondances";      return null;    }    $infos = $this->correspondances[$entite];    $table = $infos['table'];    if(!empty($where)){      // On cherche un cas existant      $res = $this->dejaInstancie($entite, $where);      if(is_object($res)){        return new GestionnaireEntiteResultats(array($res));      }      $recherche = array();      // On construit les paramètre de recherche      foreach($where as $attribut => $valeur){
+  public function select($entite, $where = array(), $autre = self::PARENTS, $alea = false, $limit = 0, $distinct = false){    if(!in_array($entite, array_keys($this->correspondances))){      $classe = get_class($entite);      echo "La classe $classe n'a définie aucune correspondances";      return null;    }    $infos = $this->correspondances[$entite];    $table = $infos['table'];    if(!empty($where) && !$distinct){      // On cherche un cas existant      $res = $this->dejaInstancie($entite, $where);      if(is_object($res)){        return new GestionnaireEntiteResultats(array($res));      }      $recherche = array();      // On construit les paramètre de recherche      foreach($where as $attribut => $valeur){
         $var = $infos['variables'][$attribut]['colonne'];        $operateur = '=';
         if(is_array($valeur)){          $operateur = 'IN';          $valeur = '('.implode(', ', $valeur).')';        }        elseif(strtoupper($valeur) == 'NULL'){          $operateur = 'IS';        }        else{          $valeur = "'$valeur'";        }        $recherche[] = "$var $operateur $valeur";      }      $where = "WHERE ".implode(' AND ', $recherche);    }    else{      $where = '';    }
     // La requête
@@ -80,6 +80,69 @@
               break;
           }
         }
+        if(isset($base['byTable']) && !is_null($var)){ // Relation ManyToMany
+          $tableMany    = $base['byTable'];
+          $champsMany   = array();
+          $valeursMany  = array();
+
+          $requete = "DESCRIBE $tableMany";
+          $sql = $this->pdo->prepare($requete);
+
+          $succes = $sql->execute();
+          $this->requetes[] = array(
+            'succes' => $succes,
+            'requete' => $requete
+          );
+
+          $colonnesBase = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+          foreach($var as $objChild){
+            foreach($colonnesBase as $colonneBase){
+              $champsMany[] = $colonneBase['Field'];
+
+              if($colonneBase['Field'] == $base['to']){
+                $val = $objChild->id;
+              }
+              elseif($colonneBase['Field'] == $base['from']){
+                $val = $obj->id;
+              }
+              else{
+                $val = $objChild->{$colonneBase['Field']};
+              }
+              if(is_object($val)){
+                if(get_class($val) == 'DateTime'){
+                  $val = $val->format('Y-m-d H:i:s');
+                }
+              }
+              if(is_null($val)){
+                $val = 'null';
+              }
+              else{
+                $val = "'$val'";
+              }
+
+              $valeursMany[] = $val;
+            }
+          }
+
+          $updateMany = array();
+          for($i = 0; $i < count($champsMany); $i++){
+            $updateMany[] = $champsMany[$i].' = '.$valeursMany[$i];
+          }
+
+          $champsMany   = '('.implode(', ', $champsMany).')';
+          $valeursMany  = '('.implode(', ', $valeursMany).')';
+          $updateMany   = implode(', ', $updateMany);
+          $requete = "INSERT INTO $tableMany $champsMany VALUES $valeursMany ON DUPLICATE KEY UPDATE $updateMany";
+          $sql = $this->pdo->prepare($requete);
+
+          $succes = $sql->execute();
+          $this->requetes[] = array(
+            'succes' => $succes,
+            'requete' => $requete
+          );
+
+        }
       }
 
       $update = array();
@@ -90,7 +153,7 @@
 
       $champs   = '('.implode(', ', $champs).')';
       $valeurs  = '('.implode(', ', $valeurs).')';
-      $update  = implode(', ', $update);
+      $update   = implode(', ', $update);
 
       // La requête
       $requete = "INSERT INTO $table $champs VALUES $valeurs ON DUPLICATE KEY UPDATE $update";
@@ -126,10 +189,8 @@
   }  /**   * Permet de faire la correspondance entre les colonnes de la table en base, et les attributs de l'entité   *   * @param string  $classe           Entité   * @param array   $donnees          Données   *   * @return Object   */  private function charger($entite, $donnees, $autre){    // Pour chaque correspondances    foreach($this->correspondances[get_class($entite)]['variables'] as $attribut => $infos){      // Si on a une entrée pour le colonne correspondant à cet attribut      if($infos['type']){        // On effectue un traitement selon le type de l'attribut        switch($infos['type']){          case 'objet':            // On charge dynamiquement le nouvel objet            switch($infos['relation']){              case '1-n':                if(($autre & self::ENFANTS) == self::ENFANTS){                  $entite->$attribut = $this->select($infos['entite'], array($infos['lien'] => $entite->id), $autre)->getAll();                }                break;              case 'n-1':                if(($autre & self::PARENTS) == self::PARENTS){                  $select = $autre;                  if(($autre & self::COUSINS) != self::COUSINS){ // Si on ne veut pas de cousins, on retire les enfants                    $select = $select & ~self::ENFANTS;                  }                  $entite->$attribut = $this->select($infos['entite'], array('id' => $donnees[$infos['colonne']]), $select)->getOne();                }                break;              case 'n-n':                if(($autre & self::FRERES) == self::FRERES){                  $select = $autre;                  if(($autre & self::COUSINS) != self::COUSINS){ // Si on ne veut pas de cousins, on retire les enfants                    $select = $select & ~self::ENFANTS;                  }                  $entite->$attribut = $this->ManyToMany($infos['entite'], $infos['byTable'], array(                    'colonne' => $infos['from'],                    'valeur' => $entite->id                  ), $infos['to'], $select);                }                break;            }            break;
           case 'array':            // TODO
             break;
-          default:            // Par défaut, on attribut simplement la valeur à l'attribut            $entite->$attribut = $donnees[$infos['colonne']];            break;        }      }    }  }  /**   *   *   *   *   */  private function ManyToMany($entite, $table, $source, $cible, $autre){    $colonne  = $source['colonne'];    $valeur   = $source['valeur'];    // La requête    $requete = "SELECT $cible FROM $table WHERE $colonne = $valeur";    $sql = $this->pdo->prepare($requete);    $succes = $sql->execute();    // On mémorise la requête et si elle a réussi ou échoué    $this->requetes[] = array(      'succes' => $succes,      'requete' => $requete    );    $resultats = array();    while($res = $sql->fetch(PDO::FETCH_ASSOC)){      $resultats[] = $this->select($entite, array('id' => $res[$cible]), $autre)->getOne();    }    return $resultats;  }  public function count($entite, $where = array()){    if(!in_array($entite, array_keys($this->correspondances))){      $classe = get_class($entite);      die("La classe $classe n'a définie aucune correspondances");    }    $infos = $this->correspondances[$entite];    $table = $infos['table'];    if(!empty($where)){      // On cherche un cas existant      $res = $this->dejaInstancie($entite, $where);      if(is_object($res)){        return new GestionnaireEntiteResultats(array($res));      }      $recherche = array();      // On construit les paramètre de recherche      foreach($where as $attribut => $valeur){        $var = $infos['variables'][$attribut]['colonne'];        $operateur = '=';        if(is_array($valeur)){          $operateur = 'IN';          $valeur = '('.implode(', ', $valeur).')';        }        elseif(strtoupper($valeur) == 'NULL'){          $operateur = 'IS';        }        else{          $valeur = "'$valeur'";        }        $recherche[] = "$var $operateur $valeur";      }      $where = "WHERE ".implode(' AND ', $recherche);    }    else{      $where = '';    }    // La requête    $requete = "SELECT count(*) as nb FROM $table $where";    $sql = $this->pdo->prepare($requete);    // On mémorise la requête et si elle a réussi ou échoué    $this->requetes[] = array(      'succes' => $sql->execute(),      'requete' => $requete    );    $res = $sql->fetch(PDO::FETCH_ASSOC);    return $res['nb'];  }  /**   * Cherche si une entité a déjà était instancié   *   * @param string  $classe Nom de la classe   * @param array   $where  Paramètres de la recherche   *   * @return Objet|false   */  private function dejaInstancie($classe, $where){    // Si on a aucune entrée pour cette classe, on stop    if(!isset($this->entites[$classe])){      return false;    }    $trouve = false;    // On parcourt les objets sauvegardés    foreach($this->entites[$classe] as $obj){      // On parcourt les propriétés recherchées      foreach($where as $attribut => $valeur){
-        if(substr($attribut, -2) == '!='){
-          $attribut = substr($attribut, 0, -2);          if($obj->$attribut == $valeur){            $trouve = false;            break;          }        }
-        else{          if($obj->$attribut != $valeur){            $trouve = false;            break;          }
-        }        $trouve = true;      }      if($trouve){        return $obj;      }    }    return false;  }  /**   * Permet de récupérer les correspondances depuis un fichier   *   * Charge les correspondances possibles pour le GestionnaireEntite à partir d'un fichier   *   * @param string  $fichier  Emplacement du fichier contenant les correspondances   *   * @return void   */  public function setCorrespondances($fichier){    // On vérifie que le fichier existe, sinon on stop    if(!file_exists($fichier)){      return false;    }    // On initialise les correspondances à null    $correspondances = array();    try{      // On récupère le type de fichier      $elements = explode('.', $fichier);      $type     = end($elements);      // On parse le fichier en entrée selon son type      switch($type){        case 'yml':          // TODO YAML file          break;        case 'php':          include $fichier;          break;      }    }    catch(Exception $e){      $f = __FILE__;      $l = __LINE__;      $m = __METHOD__;      $c = __CLASS__;      print("Une erreur est survenue dans $c::$m() ($f:$l) : $e\n");    }    $this->correspondances = $correspondances;  }}
+          default:            // Par défaut, on attribut simplement la valeur à l'attribut            $entite->$attribut = $donnees[$infos['colonne']];            break;        }      }    }  }  /**   *   *   *   *   */  private function ManyToMany($entite, $table, $source, $cible, $autre){    $colonne  = $source['colonne'];    $valeur   = $source['valeur'];    // La requête    $requete = "SELECT * FROM $table WHERE $colonne = $valeur";    $sql = $this->pdo->prepare($requete);    $succes = $sql->execute();    // On mémorise la requête et si elle a réussi ou échoué    $this->requetes[] = array(      'succes' => $succes,      'requete' => $requete    );    $resultats = array();    while($res = $sql->fetch(PDO::FETCH_ASSOC)){      $resultat = $this->select($entite, array('id' => $res[$cible]), $autre, false, 0, true)->getOne();      foreach($res as $col => $val){        if($col != $cible && $col != $colonne){          $resultat->$col = $val;        }      }      // Si une méthode postSelect existe sur l'objet, on l'appelle      if(method_exists($resultat, 'postSelect')){        $resultat->postSelect();      }      $resultats[] = $resultat;    }    return $resultats;  }  public function count($entite, $where = array()){    if(!in_array($entite, array_keys($this->correspondances))){      $classe = get_class($entite);      die("La classe $classe n'a définie aucune correspondances");    }    $infos = $this->correspondances[$entite];    $table = $infos['table'];    if(!empty($where)){      // On cherche un cas existant      $res = $this->dejaInstancie($entite, $where);      if(is_object($res)){        return new GestionnaireEntiteResultats(array($res));      }      $recherche = array();      // On construit les paramètre de recherche      foreach($where as $attribut => $valeur){        $var = $infos['variables'][$attribut]['colonne'];        $operateur = '=';        if(is_array($valeur)){          $operateur = 'IN';          $valeur = '('.implode(', ', $valeur).')';        }        elseif(strtoupper($valeur) == 'NULL'){          $operateur = 'IS';        }        else{          $valeur = "'$valeur'";        }        $recherche[] = "$var $operateur $valeur";      }      $where = "WHERE ".implode(' AND ', $recherche);    }    else{      $where = '';    }    // La requête    $requete = "SELECT count(*) as nb FROM $table $where";    $sql = $this->pdo->prepare($requete);    // On mémorise la requête et si elle a réussi ou échoué    $this->requetes[] = array(      'succes' => $sql->execute(),      'requete' => $requete    );    $res = $sql->fetch(PDO::FETCH_ASSOC);    return $res['nb'];  }  /**   * Cherche si une entité a déjà était instancié   *   * @param string  $classe Nom de la classe   * @param array   $where  Paramètres de la recherche   *   * @return Objet|false   */  private function dejaInstancie($classe, $where){    // Si on a aucune entrée pour cette classe, on stop    if(!isset($this->entites[$classe])){      return false;    }    $trouve = false;    // On parcourt les objets sauvegardés    foreach($this->entites[$classe] as $obj){      // On parcourt les propriétés recherchées      foreach($where as $attribut => $valeur){
+        if($obj->$attribut != $valeur){          $trouve = false;          break;        }
+        $trouve = true;      }      if($trouve){        return $obj;      }    }    return false;  }  /**   * Permet de récupérer les correspondances depuis un fichier   *   * Charge les correspondances possibles pour le GestionnaireEntite à partir d'un fichier   *   * @param string  $fichier  Emplacement du fichier contenant les correspondances   *   * @return void   */  public function setCorrespondances($fichier){    // On vérifie que le fichier existe, sinon on stop    if(!file_exists($fichier)){      return false;    }    // On initialise les correspondances à null    $correspondances = array();    try{      // On récupère le type de fichier      $elements = explode('.', $fichier);      $type     = end($elements);      // On parse le fichier en entrée selon son type      switch($type){        case 'yml':          // TODO YAML file          break;        case 'php':          include $fichier;          break;      }    }    catch(Exception $e){      $f = __FILE__;      $l = __LINE__;      $m = __METHOD__;      $c = __CLASS__;      print("Une erreur est survenue dans $c::$m() ($f:$l) : $e\n");    }    $this->correspondances = $correspondances;  }}
 
 ?>

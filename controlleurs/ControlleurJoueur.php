@@ -115,8 +115,8 @@ class ControlleurJoueur extends Controlleur{
   public static function menuHeader(){
     $ge = GestionnaireEntite::getInstance();
     $joueur   = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::PARENTS+$ge::ENFANTS+$ge::FRERES)->getOne();
-    $planete  = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::PARENTS+$ge::ENFANTS)->getOne();
-    
+    $planete  = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::PARENTS+$ge::ENFANTS+$ge::FRERES)->getOne();
+
     $controlleur = new Controlleur();
 
     $controlleur->render('joueur/menu_header.php', '', array(
