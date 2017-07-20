@@ -6,4 +6,10 @@
     </a>
   </div>
   <div class="separateur"></div>
+  <div>
+    <a href="<?= lien('technologie'); ?>">
+      <img src="images/batiments.png" />
+      Technologies
+    </a>
+  </div>
 </div>

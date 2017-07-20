@@ -11,6 +11,7 @@ $global = Glob::getInstance();
     <link rel='stylesheet' href='css/menu_header.css' />
     <link rel='stylesheet' href='css/menu.css' />
     <link rel='stylesheet' href='css/batiment.css' />
+    <link rel='stylesheet' href='css/technologie.css' />
     <?php
     if(DEBUG){
       echo "<link rel='stylesheet' href='css/debug.css' />";

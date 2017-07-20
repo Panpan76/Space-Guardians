@@ -48,7 +48,15 @@ $routes = array(
   'batiment\/construire\/(\d+)' => array(
     'controlleur' => 'ControlleurBatiment',
     'methode'     => 'construire'
-  )
+  ),
+  'technologie' => array(
+    'controlleur' => 'ControlleurTechnologie',
+    'methode'     => 'index'
+  ),
+  'technologie\/rechercher\/(\d+)' => array(
+    'controlleur' => 'ControlleurTechnologie',
+    'methode'     => 'rechercher'
+  ),
 );
 
 ?>
