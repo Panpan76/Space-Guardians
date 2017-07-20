@@ -1,0 +1,36 @@
+.batiment{
+	width: 45%;
+	border: 1px solid black;
+	border-radius: 35px;
+  overflow: hidden;
+}
+
+.batiment>*{
+  padding-left: 35px;
+  padding-right: 35px;
+}
+
+.batiment>.nom{
+  border-bottom: 1px solid black;
+}
+
+.batiment>.image{
+	float: right;
+	height: 75px;
+}
+
+.batiment>table{
+  border-collapse: collapse;
+  width: 80%;
+  text-align: center;
+  font-size: 0.7em;
+}
+
+.batiment>.couts{
+	font-size: 0.85em;
+	line-height: 40px;
+}
+
+.construction>div{
+	display: inline-flex;
+}

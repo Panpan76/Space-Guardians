@@ -178,6 +178,14 @@ $correspondances['Planete'] = array(
       'to'      => 'batiment_ID',
       'relation'=> 'n-n'
     ),
+    'stocks' => array(
+      'type'    => 'objet',
+      'entite'  => 'Ressource',
+      'byTable' => 'ressource_planete',
+      'from'    => 'planete_ID',
+      'to'      => 'ressource_ID',
+      'relation'=> 'n-n'
+    ),
   )
 );
 

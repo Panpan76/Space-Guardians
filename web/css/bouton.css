@@ -1,0 +1,38 @@
+
+.bouton{
+	border: 1px solid grey;
+	/* border-radius: 5px; */
+	display: inline-flex;
+	background: #768389;
+	color: inherit;
+	line-height: 40px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.bouton:hover{
+  cursor: pointer;
+  background: #242c33;
+  color: #768389;
+}
+
+.bouton.disabled{
+	background: linear-gradient(135deg, #aebcbf 0%, #6e7774 5%, #0a0e0a 5%, #0a0809 10%,
+																			#aebcbf 10%, #6e7774 15%, #0a0e0a 15%, #0a0809 20%,
+																			#aebcbf 20%, #6e7774 25%, #0a0e0a 25%, #0a0809 30%,
+																			#aebcbf 30%, #6e7774 35%, #0a0e0a 35%, #0a0809 40%,
+																			#aebcbf 40%, #6e7774 45%, #0a0e0a 45%, #0a0809 50%,
+																			#aebcbf 50%, #6e7774 55%, #0a0e0a 55%, #0a0809 60%,
+																			#aebcbf 60%, #6e7774 65%, #0a0e0a 65%, #0a0809 70%,
+																			#aebcbf 70%, #6e7774 75%, #0a0e0a 75%, #0a0809 80%,
+																			#aebcbf 80%, #6e7774 85%, #0a0e0a 85%, #0a0809 90%,
+																			#aebcbf 90%, #6e7774 95%, #0a0e0a 95%, #0a0809 100%);
+	color: snow;
+	text-shadow: 1px 1px 1px black,
+							-1px 1px 1px black,
+							-1px -1px 1px black,
+							1px -1px 1px black;
+}
+
+.bouton.disabled:hover{
+	cursor: not-allowed;
+}

@@ -7,8 +7,10 @@ $global = Glob::getInstance();
     <meta charset="utf-8" />
     <link rel='stylesheet' href='css/base.css' />
     <link rel='stylesheet' href='css/couleurs.css' />
+    <link rel='stylesheet' href='css/bouton.css' />
     <link rel='stylesheet' href='css/menu_header.css' />
     <link rel='stylesheet' href='css/menu.css' />
+    <link rel='stylesheet' href='css/batiment.css' />
     <?php
     if(DEBUG){
       echo "<link rel='stylesheet' href='css/debug.css' />";
