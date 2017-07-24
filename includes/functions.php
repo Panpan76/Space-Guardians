@@ -47,15 +47,16 @@ function convertirSecondes($sec){
     $unites = array('s', 'm', 'h');
     $res = array();
     $n = 0;
-    while($sec / 60 >= 1){
+    while($sec > 0){
       $res[$n] = $sec % 60;
       $sec = floor($sec / 60);
       $n++;
     }
     $str = '';
-    for($i = $n-1; $i > 0; $i--){
+    for($i = $n-1; $i >= 0; $i--){
       $str .= $res[$i].$unites[$i].' ';
     }
+    $str = substr($str, 0, -1);
     return $str;
   }
   else{

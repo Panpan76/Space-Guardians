@@ -15,5 +15,16 @@ div#page{
   position: absolute;
   top: 60px;
   left: 70px;
+  right: 0;
   padding: 15px;
+}
+
+
+.right{
+  float: right;
+}
+
+
+.tempsRestant>.nbSec{
+  display: none;
 }

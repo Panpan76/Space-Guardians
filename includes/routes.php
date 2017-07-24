@@ -23,7 +23,7 @@ $routes = array(
   ),
   'galaxie\/(\d+)' => array(
     'controlleur' => 'ControlleurGalaxie',
-    'methode'     => 'voir'
+    'methode'     => 'index'
   ),
   'galaxie\/nouvelle' => array(
     'controlleur' => 'ControlleurGalaxie',
@@ -36,7 +36,27 @@ $routes = array(
   'systemeSolaire\/(\d+)' => array(
     'controlleur' => 'ControlleurSystemeSolaire',
     'methode'     => 'voir'
-  )
+  ),
+  'planete\/(\d+)' => array(
+    'controlleur' => 'ControlleurPlanete',
+    'methode'     => 'voir'
+  ),
+  'batiment' => array(
+    'controlleur' => 'ControlleurBatiment',
+    'methode'     => 'index'
+  ),
+  'batiment\/construire\/(\d+)' => array(
+    'controlleur' => 'ControlleurBatiment',
+    'methode'     => 'construire'
+  ),
+  'technologie' => array(
+    'controlleur' => 'ControlleurTechnologie',
+    'methode'     => 'index'
+  ),
+  'technologie\/rechercher\/(\d+)' => array(
+    'controlleur' => 'ControlleurTechnologie',
+    'methode'     => 'rechercher'
+  ),
 );
 
 ?>
