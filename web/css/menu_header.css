@@ -53,3 +53,8 @@
   transition: top 1s;
   background: #242c33;
 }
+
+
+.menu.header .ressource>.quantiteExacte, .menu.header .ressource>.prodParSeconde{
+  display: none;
+}
