@@ -20,7 +20,7 @@ class ControlleurTechnologie extends Controlleur{
   public function index(){
     $ge = GestionnaireEntite::getInstance();
 
-    $joueur = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::ENFANTS+$ge::FRERES+$ge::PARENTS)->getOne();
+    $joueur = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::ENFANTS+$ge::PARENTS)->getOne();
     $technologies = $joueur->technologies;
 
 
@@ -39,9 +39,9 @@ class ControlleurTechnologie extends Controlleur{
   public function rechercher($id){
     $ge = GestionnaireEntite::getInstance();
 
-    $planete = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::ENFANTS+$ge::FRERES+$ge::PARENTS)->getOne();
+    $planete = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::ENFANTS+$ge::PARENTS)->getOne();
 
-    $joueur = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::ENFANTS+$ge::FRERES+$ge::PARENTS)->getOne();
+    $joueur = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::ENFANTS+$ge::PARENTS)->getOne();
     $technologies = $joueur->technologies;
 
     foreach($technologies as $technologie){
@@ -54,9 +54,9 @@ class ControlleurTechnologie extends Controlleur{
 
     // Si on a les ressources suffisante pour construire le batiment
     foreach($technologie->couts as $idRessource => $cout){
-      if($planete->stocks[$idRessource]->quantite > $cout){
+      if($planete->ressources[$idRessource]['quantite'] > $cout){
         // On recalcul les stocks en soustrayant le cout du batiment
-        $stock = $planete->stocks[$idRessource];
+        $stock = $planete->ressources[$idRessource];
         $stock->quantite -= $cout;
       }
       else{
@@ -77,7 +77,6 @@ class ControlleurTechnologie extends Controlleur{
       $ge->persist($planete);
       $ge->persist($joueur);
     }
-
     // On redirige vers la page des technologies
     Routeur::redirect('technologie');
 

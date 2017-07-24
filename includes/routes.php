@@ -23,7 +23,7 @@ $routes = array(
   ),
   'galaxie\/(\d+)' => array(
     'controlleur' => 'ControlleurGalaxie',
-    'methode'     => 'voir'
+    'methode'     => 'index'
   ),
   'galaxie\/nouvelle' => array(
     'controlleur' => 'ControlleurGalaxie',

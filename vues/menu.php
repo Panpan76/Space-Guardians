@@ -12,4 +12,11 @@
       Technologies
     </a>
   </div>
+  <div class="separateur"></div>
+  <div>
+    <a href="<?= lien('galaxie/1'); ?>">
+      <img src="images/batiments.png" />
+      Galaxie
+    </a>
+  </div>
 </div>

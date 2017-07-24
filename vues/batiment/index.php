@@ -2,6 +2,7 @@
 require_once DOSSIER_VUES.'/base.php';
 
 
+var_dump($planete->ressources);
 $disabled = '';
 if(!$planete->constructionPossible()){
   $disabled = 'disabled';
@@ -13,7 +14,7 @@ if(!$planete->constructionPossible()){
     ?>
 
     <div class="nom"><?= $batimentConstruction->nom.' ('.($batimentConstruction->niveau+1) .')'; ?></div>
-     - 
+     -
     <div class="tempsRestant">
       <span class="nbSec"><?= $batimentConstruction->tempsRestant(); ?></span>
       <span class="affichageRestant"><?= convertirSecondes($batimentConstruction->tempsRestant()); ?></span>
@@ -52,14 +53,14 @@ foreach($batiments as $batiment){
             <tr>
               <td>";
             foreach($batiment->$donnees as $idRessource => $donnee){
-              $str .= $donnee.' '.$batiment->ressources[$idRessource]->nom.'<br />';
+              $str .= $donnee.' '.$batiment->ressourcesBase[$idRessource]->nom.'<br />';
             }
             $batiment->niveau++;
             $batiment->calculProduction();
       $str .= "</td>
               <td>";
             foreach($batiment->$donnees as $idRessource => $donnee){
-              $str .= $donnee.' '.$batiment->ressources[$idRessource]->nom.'<br />';
+              $str .= $donnee.' '.$batiment->ressourcesBase[$idRessource]->nom.'<br />';
             }
             $batiment->niveau--;
     $str .= "</td>
@@ -70,7 +71,7 @@ foreach($batiments as $batiment){
 
   $str .= "<div class='couts'>Coûts : ";
   foreach($batiment->couts as $idRessource => $cout){
-    $str .= $cout.' '.$batiment->ressources[$idRessource]->nom.' / ';
+    $str .= $cout.' '.$batiment->ressourcesBase[$idRessource]->nom.' / ';
   }
   $str = substr($str, 0, -3);
   $lien = lien('batiment/construire/'.$batiment->id);
@@ -91,7 +92,7 @@ $(document).ready(function(){
     var updateTemps = setInterval(function(){
       var nb = parseInt($('.tempsRestant>.nbSec').text());
       if(nb <= 0){
-        location.reload();
+        location.reload(true);
       }
       nb--;
       $('.tempsRestant>.nbSec').text(nb);

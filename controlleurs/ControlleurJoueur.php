@@ -37,7 +37,7 @@ class ControlleurJoueur extends Controlleur{
       $joueur = $ge->select('Joueur', array(
         'pseudo'      => $data['pseudo'],
         'motDePasse'  => md5($data['mdp'])
-      ), $ge::ENFANTS)->getOne();
+      ), $ge::ENFANTS+$ge::PARENTS)->getOne();
 
       if(is_object($joueur)){
         $this->connexion($joueur);
@@ -114,9 +114,8 @@ class ControlleurJoueur extends Controlleur{
    */
   public static function menuHeader(){
     $ge = GestionnaireEntite::getInstance();
-    $joueur   = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::PARENTS+$ge::ENFANTS+$ge::FRERES)->getOne();
-    $planete  = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::PARENTS+$ge::ENFANTS+$ge::FRERES)->getOne();
-
+    $joueur   = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::PARENTS)->getOne();
+    $planete  = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::PARENTS+$ge::ENFANTS)->getOne();
     $controlleur = new Controlleur();
 
     $controlleur->render('joueur/menu_header.php', '', array(
