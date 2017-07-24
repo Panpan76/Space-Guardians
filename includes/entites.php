@@ -239,7 +239,7 @@ $correspondances['Batiment'] = array(
       'type'    => 'int',
       'colonne' => 'temps_base'
     ),
-    'ressources' => array(
+    'ressourcesBase' => array(
       'type'    => 'objet',
       'entite'  => 'Ressource',
       'byTable' => 'ressource_batiment',
