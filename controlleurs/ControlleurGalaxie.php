@@ -65,9 +65,9 @@ class ControlleurGalaxie extends Controlleur{
       26 => '#FF0000',
     );
 
-    $joueur = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::ENFANTS+$ge::PARENTS+$ge::FRERES)->getOne();
+    $joueur = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::ENFANTS+$ge::PARENTS)->getOne();
 
-    $systemes = $ge->select('SystemeSolaire')->getAll();
+    $systemes = $ge->select('SystemeSolaire', array(), $ge::ENFANTS+$ge::PARENTS)->getAll();
 
     $controlleur = new Controlleur();
 
