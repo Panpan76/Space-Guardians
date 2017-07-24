@@ -356,7 +356,7 @@
       }
 
       if(method_exists($entite, $methode)){
-        $obj->$methode();
+        $entite->$methode();
       }
 
       return $succes;
