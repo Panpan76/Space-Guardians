@@ -27,7 +27,7 @@ class Joueur extends EntiteMere{
     if(($technologie = $this->getRechercheEnCours()) != null){
       if($technologie->tempsRestant() <= 0){
         $technologie->niveau++;
-        $technologie->date_recherche = new DateTime();
+        $technologie->date_recherche = $technologie->date_amelioration;
         $technologie->date_amelioration = null;
         $ge = GestionnaireEntite::getInstance();
         $ge->persist($this);
@@ -47,6 +47,9 @@ class Joueur extends EntiteMere{
 
 
   public function getRechercheEnCours(){
+    if(empty($this->technologies)){
+      return false;
+    }
     foreach($this->technologies as $technologie){
       if(!is_null($technologie->date_amelioration)){
         return $technologie;
@@ -56,6 +59,9 @@ class Joueur extends EntiteMere{
   }
 
   public function recherchePossible(){
+    if(empty($this->technologies)){
+      return false;
+    }
     foreach($this->technologies as $technologie){
       if(!is_null($technologie->date_amelioration)){ // Si une recherche est déjà en cours
         return false;

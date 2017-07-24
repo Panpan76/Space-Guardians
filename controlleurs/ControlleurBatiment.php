@@ -20,7 +20,7 @@ class ControlleurBatiment extends Controlleur{
   public function index(){
     $ge = GestionnaireEntite::getInstance();
 
-    $planete = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::ENFANTS+$ge::FRERES+$ge::PARENTS)->getOne();
+    $planete = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::ENFANTS+$ge::PARENTS)->getOne();
     $batiments = $planete->batiments;
 
 
@@ -39,7 +39,7 @@ class ControlleurBatiment extends Controlleur{
   public function construire($id){
     $ge = GestionnaireEntite::getInstance();
 
-    $planete = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::ENFANTS+$ge::FRERES+$ge::PARENTS)->getOne();
+    $planete = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::ENFANTS+$ge::PARENTS)->getOne();
     $batiments = $planete->batiments;
 
     foreach($batiments as $batiment){
@@ -63,11 +63,13 @@ class ControlleurBatiment extends Controlleur{
     }
 
     if($maj){
-      // On met à jour la date de création du batiment pour qu'il produise à partir de maintenant
-      $batiment->date_construction = new DateTime();
       // On met à jour la date d'amélioration
       $batiment->date_amelioration = new DateTime();
       $batiment->date_amelioration->add(new DateInterval('PT'.floor($batiment->tempsConstruction).'S'));
+        // On met à jour la date de création du batiment pour qu'il produise à partir de maintenant
+      foreach($planete->batiments as $batiment){
+        $batiment->date_construction = new DateTime();
+      }
       $ge->persist($planete);
     }
 

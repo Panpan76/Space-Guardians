@@ -28,16 +28,20 @@ class Technologie extends EntiteMere{
       $this->date_amelioration = new DateTime($this->date_amelioration);
     }
 
-    $res = array();
-    foreach($this->ressources as $ressource){
-      $res[$ressource->id] = $ressource;
+    if(is_array($this->ressources)){
+      $res = array();
+      foreach($this->ressources as $ressource){
+        $res[$ressource->id] = $ressource;
+      }
+      $this->ressources = $res;
     }
-    $this->ressources = $res;
   }
 
   private function calculCouts(){
-    foreach($this->ressources as $ressource){
-      $this->couts[$ressource->id] = ($this->niveau+1)*$ressource->quantite;
+    if(is_array($this->ressources)){
+      foreach($this->ressources as $ressource){
+        $this->couts[$ressource->id] = ($this->niveau+1)*$ressource->quantite;
+      }
     }
   }
 
