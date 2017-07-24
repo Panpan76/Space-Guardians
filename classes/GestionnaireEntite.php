@@ -3,7 +3,7 @@
   /**
    * @var array|null $entites   Liste de toutes les entités ayant déjà été récupérées
    */
-  private $entites = array();  /**   * @var array|null $requetes   Liste de toutes les requêtes ayant déjà été effectuées   */  private $requetes = array();  /**   * @var array|null  $correspondances     Correspondances entre Entite et table   */  private $correspondances;  ################  ### Méthodes ###  ################  /**   * Constructeur de la classe GestionnaireEntite   *   * Visibilité privée pour utilisation du patron de conception Singleton   *   * @return GestionnaireEntite   */  private function __construct(){    try{      $this->pdo = new PDO(BDD_SGBD.':host='.BDD_HOST.';dbname='.BDD_BASE.';charset=utf8', BDD_USER, BDD_PASS);    }    catch(Exception $e){      echo $e;      return null;    }    $this->setCorrespondances(FICHIER_ENTITES);  }  /**   * Permet de récupérer l'instance de GestionnaireEntite   *   * Cette méthode met en place le patron de conception Singleton   *   * @return GestionnaireEntite   */  public static function getInstance(){    if(is_null(self::$instance)){      self::$instance = new self();    }    return self::$instance;  }
+  public $entites = array();  /**   * @var array|null $requetes   Liste de toutes les requêtes ayant déjà été effectuées   */  private $requetes = array();  /**   * @var array|null  $correspondances     Correspondances entre Entite et table   */  private $correspondances;  ################  ### Méthodes ###  ################  /**   * Constructeur de la classe GestionnaireEntite   *   * Visibilité privée pour utilisation du patron de conception Singleton   *   * @return GestionnaireEntite   */  private function __construct(){    try{      $this->pdo = new PDO(BDD_SGBD.':host='.BDD_HOST.';dbname='.BDD_BASE.';charset=utf8', BDD_USER, BDD_PASS);    }    catch(Exception $e){      echo $e;      return null;    }    $this->setCorrespondances(FICHIER_ENTITES);  }  /**   * Permet de récupérer l'instance de GestionnaireEntite   *   * Cette méthode met en place le patron de conception Singleton   *   * @return GestionnaireEntite   */  public static function getInstance(){    if(is_null(self::$instance)){      self::$instance = new self();    }    return self::$instance;  }
 
   /**
    * Permet de récupérer la liste des requetes executées
@@ -13,7 +13,7 @@
   public function getRequetes(){    return $this->requetes;  }  /**   * Permet de récupérer le nombre de requetes executées   *   * @return int   */  public function getNbRequetes(){    return count($this->getRequetes());  }
 
 
-  public function select($entite, $where = array(), $mapping = self::PARENTS){
+  public function select($entite, $where = array(), $mapping = self::PARENTS, $sauvegarde = true){
     if(($correspondances = $this->getCorrespondances($entite)) != false){
       $requete = $this->creerRequete($correspondances, $where);
 
@@ -33,25 +33,34 @@
           $obj = new $entite();
           // On charge les attributs "basiques"
           $this->charger($obj, $res, $mapping);
-          // On la sauvegarde dans notre liste d'entités
-          $this->entites[$entite][$id] = array(
-            'obj'     => $obj, // L'entité
-            'mapping' => $mapping // Le mapping correspondant
-          );
+
+          // Si on veut la sauvegarder
+          if($sauvegarde){
+            // On la sauvegarde dans notre liste d'entités
+            $this->entites[$entite][$id] = array(
+              'obj'     => $obj, // L'entité
+              'mapping' => $mapping // Le mapping correspondant
+            );
+          }
           // On charge les entités relationnelles selon le mapping
           $this->charger($obj, $res, $mapping, false);
-        }
-        // Si le mapping enegistré ne contient pas celui demandé
-        if(($this->entites[$entite][$id]['mapping'] & $mapping) != $mapping){
-          // On charge à nouveau les entités relationnelles selon le mapping manquant
-          $mapping = $mapping ^ $this->entites[$entite][$id]['mapping'];
-          $this->charger($obj, $res, $mapping, false);
+
+          // Si une méthode postSelect existe sur l'objet, on l'appelle
+          if(method_exists($obj, 'postSelect')){
+            $obj->postSelect();
+          }
         }
 
-        // Si une méthode postSelect existe sur l'objet, on l'appelle
-        if(method_exists($obj, 'postSelect')){
-          $obj->postSelect();
+        // Si on l'a sauvegardé
+        if($sauvegarde){
+          // Si le mapping enegistré ne contient pas celui demandé
+          if(($this->entites[$entite][$id]['mapping'] & $mapping) != $mapping){
+            // On charge à nouveau les entités relationnelles selon le mapping manquant
+            $mapping = $mapping ^ $this->entites[$entite][$id]['mapping'];
+            $this->charger($obj, $res, $mapping, false);
+          }
         }
+
         $resultats[] = $obj;
       }
       return new GestionnaireEntiteResultats($resultats);
@@ -166,7 +175,7 @@
 
     $resultats = array();
     while($res = $sql->fetch(PDO::FETCH_ASSOC)){
-      $obj = $this->select($entite, array('id' => $res[$cible]), $mapping)->getOne();
+      $obj = $this->select($entite, array('id' => $res[$cible]), $mapping, false)->getOne();
       foreach($res as $col => $val){
         if($col != $cible && $col != $colonne){
           $obj->$col = $val;
@@ -176,10 +185,10 @@
       if(method_exists($obj, 'postSelect')){
         $obj->postSelect();
       }
-      $this->entites[$entite][$res[$cible]] = array(
-        'obj'     => $obj, // L'entité
-        'mapping' => $mapping // Le mapping correspondant
-      );
+      // $this->entites[$entite][$res[$cible]] = array(
+      //   'obj'     => $obj, // L'entité
+      //   'mapping' => $mapping // Le mapping correspondant
+      // );
       $resultats[] = $obj;
     }
     return new GestionnaireEntiteResultats($resultats);

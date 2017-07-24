@@ -12,7 +12,7 @@ class Batiment extends EntiteMere{
   protected $date_construction;
   protected $date_amelioration;
 
-  protected $ressources;
+  // protected $ressources;
 
   protected $ressourcesBase;
   protected $tempsConstruction;
@@ -31,17 +31,10 @@ class Batiment extends EntiteMere{
       $this->date_amelioration = new DateTime($this->date_amelioration);
     }
 
-    if(is_array($this->ressources)){
+    if(is_array($this->ressourcesBase)){
       $res = array();
-      foreach($this->ressources as $ressource){
-        $ress = new Ressource();
-        $ress->id             = $ressource->id;
-        $ress->nom            = $ressource->nom;
-        $ress->image          = $ressource->image;
-        $ress->coefficient    = $ressource->coefficient;
-        $ress->typeRessource  = $ressource->typeRessource;
-        $ress->quantite       = $ressource->quantite;
-        $res[$ressource->id] = $ress;
+      foreach($this->ressourcesBase as $ressource){
+        $res[$ressource->id] = clone $ressource;
       }
       $this->ressourcesBase = $res;
     }

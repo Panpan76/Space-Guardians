@@ -24,7 +24,6 @@ class Planete extends EntiteMere{
   protected $ressources;
 
   public function postSelect(){
-
     if(($batiment = $this->getBatimentEnConstruction()) != null){
       if($batiment->tempsRestant() <= 0){
         $batiment->niveau++;
@@ -39,7 +38,7 @@ class Planete extends EntiteMere{
 
     $res = array();
     foreach($this->stocks as $ressource){
-      $res[$ressource->id] = $ressource;
+      $res[$ressource->id] = clone $ressource;
     }
     $this->stocks = $res;
 
