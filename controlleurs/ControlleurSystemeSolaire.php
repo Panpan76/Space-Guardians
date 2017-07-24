@@ -31,12 +31,15 @@ class ControlleurSystemeSolaire extends Controlleur{
    */
   public static function voir($id){
     $ge = GestionnaireEntite::getInstance();
+    
+    $planete = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::PARENTS+$ge::ENFANTS)->getOne();
     $systeme = $ge->select('SystemeSolaire', array('id' => $id), $ge::ENFANTS+$ge::PARENTS)->getOne();
 
     $controlleur = new Controlleur();
 
     $controlleur->render('SystemeSolaire/voir.php', $systeme->nom, array(
-      'systeme'  => $systeme,
+      'planeteSelect' => $planete,
+      'systeme'       => $systeme,
     ));
   }
 

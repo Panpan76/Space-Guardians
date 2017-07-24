@@ -11,8 +11,14 @@ var canvasSysteme = document.getElementById("canvasSysteme");
   echo '<script type="text/javascript">';
     $centreX = $systeme->centreX;
     $centreY = $systeme->centreY;
+    // Le système solaire
+    echo "dessinePlanete(canvasSysteme, 250, 250, 20, 'yellow');";
     foreach($systeme->planetes as $planete){
-      echo "dessinePlanete(canvasSysteme, $planete->x-$centreX+250, $planete->y-$centreY+250, 10, 'red');";
+      $couleur = 'red';
+      if($planete == $planeteSelect){
+        $couleur = 'purple';
+      }
+      echo "dessinePlanete(canvasSysteme, $planete->x-$centreX+250, $planete->y-$centreY+250, 20, '$couleur');";
     }
   echo '</script>';
 
