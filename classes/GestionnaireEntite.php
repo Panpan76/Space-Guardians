@@ -255,7 +255,13 @@
               break;
 
             case 'datetime':
-              $valeurs[] = "'$var'";
+              if(get_class($var) == 'DateTime'){
+                $date = $var->format('Y-m-d H:i:s');
+                $valeurs[] = "'$date'";
+              }
+              else{
+                $valeurs[] = "'$var'";
+              }
               break;
 
             case 'objet':
