@@ -44,7 +44,6 @@
           }
           // On charge les entités relationnelles selon le mapping
           $this->charger($obj, $res, $mapping, false);
-
           // Si une méthode postSelect existe sur l'objet, on l'appelle
           if(method_exists($obj, 'postSelect')){
             $obj->postSelect();
@@ -58,8 +57,13 @@
             // On charge à nouveau les entités relationnelles selon le mapping manquant
             $mapping = $mapping ^ $this->entites[$entite][$id]['mapping'];
             $this->charger($obj, $res, $mapping, false);
+            // Si une méthode postSelect existe sur l'objet, on l'appelle
+            if(method_exists($obj, 'postSelect')){
+              $obj->postSelect();
+            }
           }
         }
+
 
         $resultats[] = $obj;
       }
@@ -255,11 +259,16 @@
               break;
 
             case 'objet':
-              if(is_object($entite->$variable)){
-                $valeurs[] = $var->id;
+              if(empty($var)){
+                $valeurs[] = 'null';
               }
               else{
-                $valeurs[] = $var; // L'id
+                if(is_object($entite->$variable)){
+                  $valeurs[] = $var->id;
+                }
+                else{
+                  $valeurs[] = $var; // L'id
+                }
               }
               break;
 
