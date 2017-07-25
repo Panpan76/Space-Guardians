@@ -19,4 +19,11 @@
       Galaxie
     </a>
   </div>
+  <div class="separateur"></div>
+  <div>
+    <a href="<?= lien('alliance'); ?>">
+      <img src="images/batiments.png" />
+      Alliances
+    </a>
+  </div>
 </div>
