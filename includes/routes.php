@@ -57,6 +57,18 @@ $routes = array(
     'controlleur' => 'ControlleurTechnologie',
     'methode'     => 'rechercher'
   ),
+  'alliance' => array(
+    'controlleur' => 'ControlleurAlliance',
+    'methode'     => 'index'
+  ),
+  'alliance\/nouvelle' => array(
+    'controlleur' => 'ControlleurAlliance',
+    'methode'     => 'nouvelle'
+  ),
+  'alliance\/(\d+)' => array(
+    'controlleur' => 'ControlleurAlliance',
+    'methode'     => 'voir'
+  )
 );
 
 ?>

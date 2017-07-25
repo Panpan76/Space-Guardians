@@ -19,6 +19,8 @@ class Joueur extends EntiteMere{
   protected $amis;
   protected $planetes;
   protected $technologies;
+  protected $alliance;
+  protected $rang;
 
 
   public function postSelect(){
