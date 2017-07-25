@@ -68,6 +68,18 @@ $correspondances['Joueur'] = array(
       'to'      => 'technologie_ID',
       'relation'=> 'n-n'
     ),
+    'alliance' => array(
+      'type'    => 'objet',
+      'entite'  => 'Alliance',
+      'colonne' => 'alliance_ID',
+      'relation'=> 'n-1'
+    ),
+    'rang' => array(
+      'type'    => 'objet',
+      'entite'  => 'RangAlliance',
+      'colonne' => 'rang_ID',
+      'relation'=> 'n-1'
+    ),
   )
 );
 $correspondances['Race'] = array(
@@ -342,6 +354,60 @@ $correspondances['Ressource'] = array(
       'colonne' => 'type_ressource_ID',
       'relation'=> 'n-1'
     ),
+  )
+);
+
+$correspondances['RangAlliance'] = array(
+  'table'     => 'alliance_rang',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'rang_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+    'alliance' => array(
+      'type'    => 'objet',
+      'entite'  => 'Alliance',
+      'colonne' => 'alliance_ID',
+      'relation'=> 'n-1'
+    )
+  )
+);
+
+$correspondances['Alliance'] = array(
+  'table'     => 'alliance',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'alliance_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+    'tag' => array(
+      'type'    => 'string',
+      'colonne' => 'tag'
+    ),
+    'description' => array(
+      'type'    => 'string',
+      'colonne' => 'description'
+    ),
+    'rangs' => array(
+      'type'    => 'objet',
+      'entite'  => 'RangAlliance',
+      'lien'    => 'alliance',
+      'relation'=> '1-n'
+    ),
+    'joueurs' => array(
+      'type'    => 'objet',
+      'entite'  => 'Joueur',
+      'lien'    => 'alliance',
+      'relation'=> '1-n'
+    )
   )
 );
 ?>
