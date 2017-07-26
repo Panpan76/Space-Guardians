@@ -63,13 +63,13 @@ class ControlleurJoueur extends Controlleur{
       $joueur->pseudo           = $data['pseudo'];
       $joueur->motDePasse       = md5($data['mdp']);
       $joueur->dateInscription  = date("Y-m-d H:i:s");
-      $joueur->race             = $data['race'];
+      $joueur->race             = $ge->select('Race', array('id' => $data['race']))->getOne();
 
       if($ge->persist($joueur)){
         // On récupère de-nouveau notre joueur pour avoir toutes les relations qui ont été ajouté par le SGBD
         $joueur = $ge->select('Joueur', array(
           'pseudo'      => $data['pseudo']
-        ))->getOne();
+        ), $ge::ENFANTS+$ge::PARENTS)->getOne();
 
         $this->connexion($joueur);
       }
