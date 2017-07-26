@@ -42,6 +42,7 @@ class Joueur extends EntiteMere{
     $ge = GestionnaireEntite::getInstance();
     $planete = $ge->select('Planete', array('proprietaire' => null), $ge::AUCUN)->aleatoire()->getOne();
 
+    // On ajoute les ressources à la planète
     $ressources = $ge->select('Ressource')->getAll();
     $ress = array();
     foreach($ressources as $ressource){
@@ -51,7 +52,8 @@ class Joueur extends EntiteMere{
     }
     $planete->stocks = $ress;
 
-    $batiments  = $ge->select('Batiment')->getAll();
+    // On ajoute les batiments à la planète
+    $batiments  = $ge->select('Batiment', array(), $ge::AUCUN)->getAll();
     $bats = array();
     foreach($batiments as $batiment){
       $bat = clone $batiment;
@@ -64,6 +66,19 @@ class Joueur extends EntiteMere{
     $planete->proprietaire = $this;
 
     $ge->persist($planete);
+
+    // On ajoute les technologies au joueur
+    $technologies  = $ge->select('Technologie', array(), $ge::AUCUN)->getAll();
+    $techs = array();
+    foreach($technologies as $technologie){
+      $tech = clone $technologie;
+      $tech->niveau = 0;
+      $tech->date_recherche = new DateTime();
+      $techs[] = $tech;
+    }
+    $this->technologies = $techs;
+
+    $ge->persist($this);
   }
 
 
@@ -81,7 +96,7 @@ class Joueur extends EntiteMere{
 
   public function recherchePossible(){
     if(empty($this->technologies)){
-      return false;
+      return true;
     }
     foreach($this->technologies as $technologie){
       if(!is_null($technologie->date_amelioration)){ // Si une recherche est déjà en cours
