@@ -58,7 +58,7 @@ class Planete extends EntiteMere{
           $prodSec = $production / 3600; // On converti la prod / heure en prod / sec
           $this->stocks[$idRessource]->quantite += $prodSec * (time() - $batiment->date_construction->getTimestamp()); // On ajoute la prod au stock existant
           $this->ressources[$idRessource] = array(
-            'nom'     => $res[$ressource->id]->nom,
+            'nom'     => $this->stocks[$idRessource]->nom,
             'prod'    => $production,
             'prodSec' => $production / 3600,
             'quantite'=> $this->stocks[$idRessource]->quantite,
