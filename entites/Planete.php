@@ -74,6 +74,40 @@ class Planete extends EntiteMere{
   }
 
 
+  /**
+   * Met à jour le stock de ressource de la planète selon des ressources à soustraire
+   *
+   * @param array $couts
+   *    $couts = array(
+   *      idRessource => quantite,
+   *    )
+   *
+   * @return boolean
+   */
+  public function majStock($couts){
+    foreach($couts as $idRessource => $cout){
+      if($this->stocks[$idRessource]->quantite > $cout){
+        // On recalcul les stocks en soustrayant le cout du batiment
+        $stock = $this->stocks[$idRessource];
+        $stock->quantite -= $cout;
+      }
+      else{
+        // Si une ressource est insuffisante, on annule
+        return false;
+      }
+    }
+
+    $ge = GestionnaireEntite::getInstance();
+
+    // On met à jour la date de création du batiment pour qu'il produise à partir de maintenant
+    foreach($this->batiments as $batiment){
+      $batiment->date_construction = new DateTime();
+    }
+
+    return $ge->persist($this);
+  }
+
+
   public function getBatimentEnConstruction(){
     if(empty($this->batiments)){
       return false;

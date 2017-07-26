@@ -48,28 +48,11 @@ class ControlleurBatiment extends Controlleur{
       }
     }
 
-    $maj = true;
-    // Si on a les ressources suffisante pour construire le batiment
-    foreach($batiment->couts as $idRessource => $cout){
-      if($planete->stocks[$idRessource]->quantite > $cout){
-        // On recalcul les stocks en soustrayant le cout du batiment
-        $stock = $planete->stocks[$idRessource];
-        $stock->quantite -= $cout;
-      }
-      else{
-        // Si une ressource est insuffisante, on annule
-        $maj = false;
-      }
-    }
 
-    if($maj){
+    if($planete->majStock($batiment->couts)){
       // On met à jour la date d'amélioration
       $batiment->date_amelioration = new DateTime();
       $batiment->date_amelioration->add(new DateInterval('PT'.floor($batiment->tempsConstruction).'S'));
-        // On met à jour la date de création du batiment pour qu'il produise à partir de maintenant
-      foreach($planete->batiments as $batiment){
-        $batiment->date_construction = new DateTime();
-      }
       $ge->persist($planete);
     }
 

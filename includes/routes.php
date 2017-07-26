@@ -68,6 +68,18 @@ $routes = array(
   'alliance\/(\d+)' => array(
     'controlleur' => 'ControlleurAlliance',
     'methode'     => 'voir'
+  ),
+  'modele' => array(
+    'controlleur' => 'ControlleurModele',
+    'methode'     => 'index'
+  ),
+  'modele\/nouveau' => array(
+    'controlleur' => 'ControlleurModele',
+    'methode'     => 'nouveau'
+  ),
+  'modele\/(\d+)\/construire\/(\d+)' => array(
+    'controlleur' => 'ControlleurModele',
+    'methode'     => 'construire'
   )
 );
 

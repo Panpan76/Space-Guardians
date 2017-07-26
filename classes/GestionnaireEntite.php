@@ -212,7 +212,12 @@
 
     $cherche = array();
     foreach($where as $colonne => $valeur){
-      $cherche[] = $correspondances['variables'][$colonne]['colonne']." = '".$valeur."'";
+      if(is_null($valeur)){
+        $cherche[] = $correspondances['variables'][$colonne]['colonne']." IS NULL";
+      }
+      else{
+        $cherche[] = $correspondances['variables'][$colonne]['colonne']." = '".$valeur."'";
+      }
     }
     $where = 'WHERE '.implode(' AND ', $cherche);
     if(empty($cherche)){
@@ -255,7 +260,13 @@
               break;
 
             case 'datetime':
-              $valeurs[] = "'$var'";
+              if(is_object($var) && get_class($var) == 'DateTime'){
+                $date = $var->format('Y-m-d H:i:s');
+                $valeurs[] = "'$date'";
+              }
+              else{
+                $valeurs[] = "'$var'";
+              }
               break;
 
             case 'objet':

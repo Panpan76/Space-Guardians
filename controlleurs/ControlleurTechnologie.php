@@ -50,31 +50,10 @@ class ControlleurTechnologie extends Controlleur{
       }
     }
 
-    $maj = true;
-
-    // Si on a les ressources suffisante pour construire le batiment
-    foreach($technologie->couts as $idRessource => $cout){
-      if($planete->ressources[$idRessource]['quantite'] > $cout){
-        // On recalcul les stocks en soustrayant le cout du batiment
-        $stock = $planete->ressources[$idRessource];
-        $stock->quantite -= $cout;
-      }
-      else{
-        // Si une ressource est insuffisante, on annule
-        $maj = false;
-      }
-    }
-
-    if($maj){
-      // On met à jour la date de création du batiment pour qu'il produise à partir de maintenant
-      $technologie->date_recherche = new DateTime();
+    if($planete->majStock($technologie->couts)){
       // On met à jour la date d'amélioration
       $technologie->date_amelioration = new DateTime();
       $technologie->date_amelioration->add(new DateInterval('PT'.floor($technologie->tempsRecherche).'S'));
-      foreach($planete->batiments as $batiment){
-        $batiment->date_construction = new DateTime();
-      }
-      $ge->persist($planete);
       $ge->persist($joueur);
     }
     // On redirige vers la page des technologies
