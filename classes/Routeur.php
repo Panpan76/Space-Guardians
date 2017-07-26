@@ -19,11 +19,6 @@ class Routeur{
   private static $instance = null;
 
   /**
-   * @var string|null $url        URL demandé par l'utilisateur
-   */
-  private $url;
-
-  /**
    * @var array|null  $routes     Routes possibles utilisées par le Routeur
    */
   private $routes;

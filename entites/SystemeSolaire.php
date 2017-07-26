@@ -62,9 +62,8 @@ class SystemeSolaire extends EntiteMere{
   }
 
   public function postSelect(){
-    $ge = GestionnaireEntite::getInstance();
 
-    $this->nbPlanetes = $ge->count('Planete', array('systemeSolaire' => $this->id));
+    $this->nbPlanetes = count($this->planetes);
   }
 
 

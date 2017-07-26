@@ -12,15 +12,29 @@ class ControlleurGalaxie extends Controlleur{
   ### Méthodes ###
   ################
 
+  public function index($id){
+    $ge = GestionnaireEntite::getInstance();
+
+    $galaxie = $ge->select('Galaxie', array('id' => $id))->getOne();
+    $planete = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::PARENTS+$ge::ENFANTS)->getOne();
+    $joueur = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::ENFANTS+$ge::PARENTS)->getOne();
+
+    $this->render('galaxie/index.php', $galaxie->nom, array(
+      'galaxie' => $galaxie,
+      'joueur'  => $joueur,
+      'planete' => $planete
+    ));
+  }
+
   /**
    * Voir
    *
    * @return void
    */
-  public function voir($id){
+  public static function voir($id){
     $ge = GestionnaireEntite::getInstance();
 
-    $galaxie = $ge->select('Galaxie', array('id' => 1))->getOne();
+    $galaxie = $ge->select('Galaxie', array('id' => $id))->getOne();
 
     $degrades = array(
       1 => '#FFFFFF',
@@ -51,12 +65,16 @@ class ControlleurGalaxie extends Controlleur{
       26 => '#FF0000',
     );
 
-    $systemes = $ge->select('SystemeSolaire')->getAll();
+    $joueur = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::ENFANTS+$ge::PARENTS)->getOne();
 
+    $systemes = $ge->select('SystemeSolaire', array(), $ge::ENFANTS+$ge::PARENTS)->getAll();
 
-    $this->render('galaxie/voir.php', $galaxie->nom, array(
+    $controlleur = new Controlleur();
+
+    $controlleur->render('galaxie/voir.php', $galaxie->nom, array(
       'degrades'  => $degrades,
-      'systemes'  => $systemes
+      'systemes'  => $systemes,
+      'joueur'    => $joueur
     ));
   }
 

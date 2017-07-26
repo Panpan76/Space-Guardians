@@ -12,8 +12,9 @@ class Batiment extends EntiteMere{
   protected $date_construction;
   protected $date_amelioration;
 
-  protected $ressources;
+  // protected $ressources;
 
+  protected $ressourcesBase;
   protected $tempsConstruction;
   protected $couts;
   protected $productions;
@@ -30,38 +31,48 @@ class Batiment extends EntiteMere{
       $this->date_amelioration = new DateTime($this->date_amelioration);
     }
 
-    $res = array();
-    foreach($this->ressources as $ressource){
-      $res[$ressource->id] = $ressource;
-    }
-    $this->ressources = $res;
-
-    switch($this->typeBatiment->nom){
-      case 'Production':
-        $this->calculProduction();
-        break;
-
-      case 'Stockage':
-        $this->calculStockage();
-        break;
+    if(is_array($this->ressourcesBase)){
+      $res = array();
+      foreach($this->ressourcesBase as $ressource){
+        $res[$ressource->id] = clone $ressource;
+      }
+      $this->ressourcesBase = $res;
     }
   }
 
-  private function calculCouts(){
-    foreach($this->ressources as $ressource){
-      $this->couts[$ressource->id] = ($this->niveau+1)*$ressource->quantite;
+  public function calculCouts(){
+    if(is_array($this->ressourcesBase)){
+      foreach($this->ressourcesBase as $ressource){
+        $this->couts[$ressource->id] = ($this->niveau+1)*$ressource->quantite;
+      }
+    }
+
+    if(is_object($this->typeBatiment)){
+      switch($this->typeBatiment->nom){
+        case 'Production':
+          $this->calculProduction();
+          break;
+
+        case 'Stockage':
+          $this->calculStockage();
+          break;
+      }
     }
   }
 
   public function calculProduction(){
-    foreach($this->ressources as $ressource){
-      $this->productions[$ressource->id] = ($this->niveau+1)*$ressource->quantite*3/2*$ressource->coefficient;
+    if(is_array($this->ressourcesBase)){
+      foreach($this->ressourcesBase as $ressource){
+        $this->productions[$ressource->id] = ($this->niveau+1)*$ressource->quantite*3/2*$ressource->coefficient;
+      }
     }
   }
 
   private function calculStockage(){
-    foreach($this->ressources as $ressource){
-      $this->stockages[$ressource->id] = ($this->niveau+1)*$ressource->quantite*3/2*$ressource->coefficient;
+    if(is_array($this->ressourcesBase)){
+      foreach($this->ressourcesBase as $ressource){
+        $this->stockages[$ressource->id] = ($this->niveau+1)*$ressource->quantite*3/2*$ressource->coefficient;
+      }
     }
   }
 
@@ -73,63 +84,5 @@ class Batiment extends EntiteMere{
     $maintenant = new DateTime();
     $restant = $this->date_amelioration->getTimestamp() - $maintenant->getTimestamp();
     return $restant; // En seconde
-  }
-
-  public function __tostring(){
-    $type = $this->typeBatiment->nom;
-    $str = "<div class='batiment'>
-              <div class='image'>$this->image</div>
-              <div class='nom'>$this->nom ($this->niveau) - $type</div>
-              <div class='description'>$this->description</div>";
-
-    $typeArray = array(
-      'Production' => array(
-        'class'   => 'production',
-        'donnees' => 'productions'
-      ),
-      'Stockage' => array(
-        'class'   => 'stockage',
-        'donnees' => 'stockages'
-      )
-    );
-
-    $class    = $typeArray[$type]['class'];
-    $donnees  = $typeArray[$type]['donnees'];
-
-    $str .= "<table class='$class'>
-              <tr>
-                <th>Actuelle</th>
-                <th>Niveau suivant</th>
-              </tr>
-              <tr>
-                <td>";
-              foreach($this->$donnees as $idRessource => $donnee){
-                $str .= $donnee.' '.$this->ressources[$idRessource]->nom.'<br />';
-              }
-              $this->niveau++;
-              $this->calculProduction();
-        $str .= "</td>
-                <td>";
-              foreach($this->$donnees as $idRessource => $donnee){
-                $str .= $donnee.' '.$this->ressources[$idRessource]->nom.'<br />';
-              }
-              $this->niveau--;
-      $str .= "</td>
-            </tr>
-          </table>";
-
-
-
-    $str .= "<div class='couts'>Coûts : ";
-    foreach($this->couts as $idRessource => $cout){
-      $str .= $cout.' '.$this->ressources[$idRessource]->nom.' / ';
-    }
-    $str = substr($str, 0, -3);
-    $lien = lien('batiment/construire/'.$this->id);
-    $temps = convertirSecondes($this->tempsConstruction);
-    $str .= "<a class='construire bouton disabled right' href='$lien'>Construire ($temps)</a>
-            </div>
-          </div>";
-    return $str;
   }
 }

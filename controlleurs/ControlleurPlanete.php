@@ -19,7 +19,7 @@ class ControlleurPlanete extends Controlleur{
    */
   public function voir($id){
     $ge = GestionnaireEntite::getInstance();
-    $planete = $ge->select('Planete', array('id' => $id), $ge::ENFANTS+$ge::PARENTS+$ge::FRERES)->getOne();
+    $planete = $ge->select('Planete', array('id' => $id), $ge::ENFANTS+$ge::PARENTS)->getOne();
 
     $this->render('planete/voir.php', $planete, array(
       'planete' => $planete

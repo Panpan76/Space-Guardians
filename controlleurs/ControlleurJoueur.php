@@ -37,7 +37,7 @@ class ControlleurJoueur extends Controlleur{
       $joueur = $ge->select('Joueur', array(
         'pseudo'      => $data['pseudo'],
         'motDePasse'  => md5($data['mdp'])
-      ), $ge::ENFANTS)->getOne();
+      ), $ge::ENFANTS+$ge::PARENTS)->getOne();
 
       if(is_object($joueur)){
         $this->connexion($joueur);
@@ -63,13 +63,13 @@ class ControlleurJoueur extends Controlleur{
       $joueur->pseudo           = $data['pseudo'];
       $joueur->motDePasse       = md5($data['mdp']);
       $joueur->dateInscription  = date("Y-m-d H:i:s");
-      $joueur->race             = $data['race'];
+      $joueur->race             = $ge->select('Race', array('id' => $data['race']))->getOne();
 
       if($ge->persist($joueur)){
         // On récupère de-nouveau notre joueur pour avoir toutes les relations qui ont été ajouté par le SGBD
         $joueur = $ge->select('Joueur', array(
           'pseudo'      => $data['pseudo']
-        ))->getOne();
+        ), $ge::ENFANTS+$ge::PARENTS)->getOne();
 
         $this->connexion($joueur);
       }
@@ -114,9 +114,8 @@ class ControlleurJoueur extends Controlleur{
    */
   public static function menuHeader(){
     $ge = GestionnaireEntite::getInstance();
-    $joueur   = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::PARENTS+$ge::ENFANTS+$ge::FRERES)->getOne();
-    $planete  = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::PARENTS+$ge::ENFANTS+$ge::FRERES)->getOne();
-
+    $joueur   = $ge->select('Joueur', array('id' => $_SESSION['joueur']), $ge::PARENTS)->getOne();
+    $planete  = $ge->select('Planete', array('id' => $_SESSION['planete']), $ge::PARENTS+$ge::ENFANTS)->getOne();
     $controlleur = new Controlleur();
 
     $controlleur->render('joueur/menu_header.php', '', array(
