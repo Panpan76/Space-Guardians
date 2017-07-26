@@ -40,7 +40,26 @@ class Joueur extends EntiteMere{
 
   public function postInsert(){
     $ge = GestionnaireEntite::getInstance();
-    $planete = $ge->select('Planete', array('proprietaire' => 'NULL'), GestionnaireEntite::PARENTS, true, 1)->aleatoire()->getOne();
+    $planete = $ge->select('Planete', array('proprietaire' => null), $ge::AUCUN)->aleatoire()->getOne();
+
+    $ressources = $ge->select('Ressource')->getAll();
+    $ress = array();
+    foreach($ressources as $ressource){
+      $res = clone $ressource;
+      $res->quantite = floor(1000*$res->coefficient); // Quantité initiale
+      $ress[] = $res;
+    }
+    $planete->stocks = $ress;
+
+    $batiments  = $ge->select('Batiment')->getAll();
+    $bats = array();
+    foreach($batiments as $batiment){
+      $bat = clone $batiment;
+      $bat->niveau = 0;
+      $bat->date_construction = new DateTime();
+      $bats[] = $bat;
+    }
+    $planete->batiments = $bats;
 
     $planete->proprietaire = $this;
 

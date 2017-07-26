@@ -410,4 +410,82 @@ $correspondances['Alliance'] = array(
     )
   )
 );
+
+$correspondances['ClasseVaisseau'] = array(
+  'table'     => 'vaisseau_classe',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'classe_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    )
+  )
+);
+
+$correspondances['ModeleVaisseau'] = array(
+  'table'     => 'vaisseau_modele',
+  'variables' => array(
+    'id' => array(
+      'type'    => 'PK',
+      'colonne' => 'modele_ID'
+    ),
+    'nom' => array(
+      'type'    => 'string',
+      'colonne' => 'nom'
+    ),
+    'temps' => array(
+      'type'    => 'int',
+      'colonne' => 'temps'
+    ),
+    'joueur' => array(
+      'type'    => 'objet',
+      'entite'  => 'Joueur',
+      'colonne' => 'joueur_ID',
+      'relation'=> 'n-1'
+    ),
+    'classe' => array(
+      'type'    => 'objet',
+      'entite'  => 'ClasseVaisseau',
+      'colonne' => 'classe_ID',
+      'relation'=> 'n-1'
+    ),
+    'ressources' => array(
+      'type'    => 'objet',
+      'entite'  => 'Ressource',
+      'byTable' => 'vaisseau_modele_ressource',
+      'from'    => 'modele_ID',
+      'to'      => 'ressource_ID',
+      'relation'=> 'n-n'
+    ),
+  )
+);
+
+$correspondances['VaisseauConstruction'] = array(
+  'table'     => 'vaisseau_construction',
+  'variables' => array(
+    'planete' => array(
+      'type'    => 'objet',
+      'entite'  => 'Planete',
+      'colonne' => 'planete_ID',
+      'relation'=> 'n-1'
+    ),
+    'modele' => array(
+      'type'    => 'objet',
+      'entite'  => 'Modele',
+      'colonne' => 'modele_ID',
+      'relation'=> 'n-1'
+    ),
+    'quantite' => array(
+      'type'    => 'int',
+      'colonne' => 'quantite'
+    ),
+    'date' => array(
+      'type'    => 'datetime',
+      'colonne' => 'date_construction'
+    )
+  )
+);
 ?>

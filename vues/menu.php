@@ -26,4 +26,11 @@
       Alliances
     </a>
   </div>
+  <div class="separateur"></div>
+  <div>
+    <a href="<?= lien('modele'); ?>">
+      <img src="images/batiments.png" />
+      Modèles
+    </a>
+  </div>
 </div>
