@@ -393,6 +393,28 @@
     return false;
   }
 
+
+  public function supprime($entite){
+    if(($correspondances = $this->getCorrespondances($entite)) != false){
+      $infos    = $correspondances;
+      $table    = $infos['table'];
+      $primaire = $infos['variables']['id']['colonne'];
+
+      $requete = "DELETE FROM $table WHERE $primaire = $entite->id";
+      $sql = $this->pdo->prepare($requete);
+
+      $succes = $sql->execute();
+
+      // On mémorise la requête et si elle a réussi ou échoué
+      $this->requetes[] = array(
+        'succes' => $succes,
+        'requete' => $requete
+      );
+      return $succes;
+    }
+    return false;
+  }
+
   /**
    * Permet de récupérer les correspondances définies selon l'entité voulu
    *

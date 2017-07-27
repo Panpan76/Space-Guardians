@@ -62,7 +62,6 @@ class ControlleurJoueur extends Controlleur{
     if($data = $this->aDonnees()){
       $joueur->pseudo           = $data['pseudo'];
       $joueur->motDePasse       = md5($data['mdp']);
-      $joueur->dateInscription  = date("Y-m-d H:i:s");
       $joueur->race             = $ge->select('Race', array('id' => $data['race']))->getOne();
 
       if($ge->persist($joueur)){
