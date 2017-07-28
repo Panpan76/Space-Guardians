@@ -6,6 +6,8 @@
  *
  * @author Panpan76
  * @version 1.0
+ *
+ * @codeCoverageIgnore
  */
 class EntiteMere{
 
