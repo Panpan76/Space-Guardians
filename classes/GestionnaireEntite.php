@@ -1,19 +1,103 @@
-<?php/** * Classe GestionnaireEntite * * Permet de gérer les entités * * @author  Panpan76 * @version 1.0 */class GestionnaireEntite{  const AUCUN       = 0b0000;  const ENFANTS     = 0b0001;  const PARENTS     = 0b0010;  const FRERES      = 0b0100; // Les enfants des parents  const BEAUXFRERES = 0b1000; // Les parents des enfants  #################  ### Variables ###  #################  /**   * @var PDO|null $pdo   Instance de PDO   */  private $pdo;  /**   * @var GestionnaireEntite|null $instance   Instance de la classe GestionnaireEntite   */  private static $instance = null;
+<?php
+
+/**
+ * Classe GestionnaireEntite
+ *
+ * Permet de gérer les entités
+ *
+ * @author  Panpan76
+ * @version 1.0
+ */
+class GestionnaireEntite{
+
+  const AUCUN       = 0b0000;
+  const ENFANTS     = 0b0001;
+  const PARENTS     = 0b0010;
+  const FRERES      = 0b0100; // Les enfants des parents
+  const BEAUXFRERES = 0b1000; // Les parents des enfants
+
+  #################
+  ### Variables ###
+  #################
+
+  /**
+   * @var PDO|null $pdo   Instance de PDO
+   */
+  private $pdo;
+  /**
+   * @var GestionnaireEntite|null $instance   Instance de la classe GestionnaireEntite
+   */
+  private static $instance = null;
 
   /**
    * @var array|null $entites   Liste de toutes les entités ayant déjà été récupérées
    */
-  public $entites = array();  /**   * @var array|null $requetes   Liste de toutes les requêtes ayant déjà été effectuées   */  private $requetes = array();  /**   * @var array|null  $correspondances     Correspondances entre Entite et table   */  private $correspondances;  ################  ### Méthodes ###  ################  /**   * Constructeur de la classe GestionnaireEntite   *   * Visibilité privée pour utilisation du patron de conception Singleton   *   * @return GestionnaireEntite   */  private function __construct(){    try{      $this->pdo = new PDO(BDD_SGBD.':host='.BDD_HOST.';dbname='.BDD_BASE.';charset=utf8', BDD_USER, BDD_PASS);    }    catch(Exception $e){      echo $e;      return null;    }    $this->setCorrespondances(FICHIER_ENTITES);  }  /**   * Permet de récupérer l'instance de GestionnaireEntite   *   * Cette méthode met en place le patron de conception Singleton   *   * @return GestionnaireEntite   */  public static function getInstance(){    if(is_null(self::$instance)){      self::$instance = new self();    }    return self::$instance;  }
+  public $entites = array();
+
+  /**
+   * @var array|null $requetes   Liste de toutes les requêtes ayant déjà été effectuées
+   */
+  private $requetes = array();
+
+  /**
+   * @var array|null  $correspondances     Correspondances entre Entite et table
+   */
+  private $correspondances;
+
+
+
+  ################
+  ### Méthodes ###
+  ################
+
+  /**
+   * Constructeur de la classe GestionnaireEntite
+   *
+   * Visibilité privée pour utilisation du patron de conception Singleton
+   *
+   * @return GestionnaireEntite
+   */
+  private function __construct($sgbd = BDD_SGBD, $host = BDD_HOST, $base = BDD_BASE, $user = BDD_USER, $pass = BDD_PASS){
+    $this->pdo = new PDO("$sgbd:host=$host;dbname=$base;charset=utf8", $user, $pass);
+    $this->setCorrespondances(FICHIER_ENTITES);
+  }
+
+
+  /**
+   * Permet de récupérer l'instance de GestionnaireEntite
+   *
+   * Cette méthode met en place le patron de conception Singleton
+   *
+   * @return GestionnaireEntite
+   */
+  public static function getInstance(){
+    if(is_null(self::$instance)){
+      self::$instance = new self();
+    }
+    return self::$instance;
+  }
 
   /**
    * Permet de récupérer la liste des requetes executées
    *
    * @return array
    */
-  public function getRequetes(){    return $this->requetes;  }  /**   * Permet de récupérer le nombre de requetes executées   *   * @return int   */  public function getNbRequetes(){    return count($this->getRequetes());  }
+  public function getRequetes(){
+    return $this->requetes;
+  }
+
+  /**
+   * Permet de récupérer le nombre de requetes executées
+   *
+   * @return int
+   */
+  public function getNbRequetes(){
+    return count($this->getRequetes());
+  }
 
 
   public function select($entite, $where = array(), $mapping = self::PARENTS, $sauvegarde = true){
+    $resultats = array();
     if(($correspondances = $this->getCorrespondances($entite)) != false){
       $requete = $this->creerRequete($correspondances, $where);
 
@@ -24,7 +108,6 @@
         'succes'  => $sql->execute()
       );
 
-      $resultats = array();
       while($res = $sql->fetch(PDO::FETCH_ASSOC)){
         $colonneID  = $correspondances['variables']['id']['colonne'];
         $id         = $res[$colonneID];
@@ -67,8 +150,8 @@
 
         $resultats[] = $obj;
       }
-      return new GestionnaireEntiteResultats($resultats);
     }
+    return new GestionnaireEntiteResultats($resultats);
   }
 
   /**
@@ -288,19 +371,75 @@
               break;
           }
         }
+      }
+
+      $update = array();
+      for($i = 0; $i < count($champs); $i++){
+        $update[] = $champs[$i].' = '.$valeurs[$i];
+      }
+
+
+      $champs   = '('.implode(', ', $champs).')';
+      $valeurs  = '('.implode(', ', $valeurs).')';
+      $update   = implode(', ', $update);
+
+      // La requête
+      $requete = "INSERT INTO $table $champs VALUES $valeurs ON DUPLICATE KEY UPDATE $update";
+      $sql = $this->pdo->prepare($requete);
+
+      $succes = $sql->execute();
+
+      // On mémorise la requête et si elle a réussi ou échoué
+      $this->requetes[] = array(
+        'succes' => $succes,
+        'requete' => $requete
+      );
+
+      // Si on a déjà un ID, c'est que c'était un update, sinon un insert
+      if(property_exists($entite, 'id') && $entite->id != null){
+        $methode = 'postUpdate';
+      }
+      else{
+        $entite->id = $this->pdo->lastInsertId();
+        $methode = 'postInsert';
+      }
+
+      // On s'occupe des relations ManyToMany s'il y en a
+      $succes = $succes && $this->persistManyToMany($entite);
+
+      if(method_exists($entite, $methode)){
+        $entite->$methode();
+      }
+
+      return $succes;
+    }
+    return false;
+  }
+
+
+  private function persistManyToMany($entite){
+    if(($correspondances = $this->getCorrespondances($entite)) != false){
+      $infos = $correspondances;
+
+      $champs = $valeurs = [];
+
+      $retour = true;
+
+      foreach($infos['variables'] as $variable => $base){
+        $var = $entite->$variable;
         if(isset($base['byTable']) && !is_null($var)){ // Relation ManyToMany
           $tableMany    = $base['byTable'];
-          $champsMany   = array();
-          $valeursMany  = array();
+          $champsMany   = $valeursMany = [];
 
           $requete = "DESCRIBE $tableMany";
           $sql = $this->pdo->prepare($requete);
-
           $succes = $sql->execute();
-          $this->requetes[] = array(
+
+          $resultats = [
             'succes' => $succes,
             'requete' => $requete
-          );
+          ];
+          $this->requetes[] = $resultats;
 
           $colonnesBase = $sql->fetchAll(PDO::FETCH_ASSOC);
 
@@ -350,49 +489,13 @@
             'requete' => $requete
           );
 
+          $retour = $succes && $retour;
         }
       }
-
-      $update = array();
-      for($i = 0; $i < count($champs); $i++){
-        $update[] = $champs[$i].' = '.$valeurs[$i];
-      }
-
-
-      $champs   = '('.implode(', ', $champs).')';
-      $valeurs  = '('.implode(', ', $valeurs).')';
-      $update   = implode(', ', $update);
-
-      // La requête
-      $requete = "INSERT INTO $table $champs VALUES $valeurs ON DUPLICATE KEY UPDATE $update";
-      $sql = $this->pdo->prepare($requete);
-
-      $succes = $sql->execute();
-
-      // On mémorise la requête et si elle a réussi ou échoué
-      $this->requetes[] = array(
-        'succes' => $succes,
-        'requete' => $requete
-      );
-
-      // Si on a déjà un ID, c'est que c'était un update, sinon un insert
-      if(property_exists($entite, 'id') && $entite->id != null){
-        $methode = 'postUpdate';
-      }
-      else{
-        $entite->id = $this->pdo->lastInsertId();
-        $methode = 'postInsert';
-      }
-
-      if(method_exists($entite, $methode)){
-        $entite->$methode();
-      }
-
-      return $succes;
+      return $retour;
     }
     return false;
   }
-
 
   public function supprime($entite){
     if(($correspondances = $this->getCorrespondances($entite)) != false){
@@ -435,6 +538,40 @@
 
 
 
-  /**   * Permet de récupérer les correspondances depuis un fichier   *   * Charge les correspondances possibles pour le GestionnaireEntite à partir d'un fichier   *   * @param string  $fichier  Emplacement du fichier contenant les correspondances   *   * @return void   */  public function setCorrespondances($fichier){    // On vérifie que le fichier existe, sinon on stop    if(!file_exists($fichier)){      return false;    }    // On initialise les correspondances à null    $correspondances = array();    try{      // On récupère le type de fichier      $elements = explode('.', $fichier);      $type     = end($elements);      // On parse le fichier en entrée selon son type      switch($type){        case 'yml':          // TODO YAML file          break;        case 'php':          include $fichier;          break;      }    }    catch(Exception $e){      $f = __FILE__;      $l = __LINE__;      $m = __METHOD__;      $c = __CLASS__;      print("Une erreur est survenue dans $c::$m() ($f:$l) : $e\n");    }    $this->correspondances = $correspondances;  }}
-
-?>
+
+
+  /**
+   * Permet de récupérer les correspondances depuis un fichier
+   *
+   * Charge les correspondances possibles pour le GestionnaireEntite à partir d'un fichier
+   *
+   * @param string  $fichier  Emplacement du fichier contenant les correspondances
+   *
+   * @return void
+   */
+  public function setCorrespondances($fichier){
+    // On vérifie que le fichier existe, sinon on stop
+    if(!file_exists($fichier)){
+      return false;
+    }
+
+    // On initialise les correspondances à null
+    $correspondances = array();
+
+    // On récupère le type de fichier
+    $elements = explode('.', $fichier);
+    $type     = end($elements);
+    // On parse le fichier en entrée selon son type
+    switch($type){
+      // TODO YAML file
+
+      case 'php':
+        include $fichier;
+        break;
+    }
+
+    $this->correspondances = $correspondances;
+  }
+}
+
+?>

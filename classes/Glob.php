@@ -47,14 +47,7 @@ class Glob{
   public static function getInstance(){
     // Si aucune instance n'existe
     if(is_null(self::$instance)){
-      try{
-        // On essaye de la créer
-        self::$instance = new self();
-      }
-      catch(Exception $e){
-        // On capture une éventuelle erreur
-        echo $e;
-      }
+      self::$instance = new self();
     }
     // On retourne l'instance de Glob
     return self::$instance;
@@ -78,21 +71,6 @@ class Glob{
     }
   }
 
-
-  /**
-   * Magic getter
-   *
-   * Permet d'e récupérer un attribut de la classe de manière dynamique
-   *
-   * @param string $attribut
-   *
-   * @return mixed
-   */
-  public function __get($attribut){
-    if(isset($this->$attribut)){
-      return $this->$attribut;
-    }
-  }
 }
 
 ?>
