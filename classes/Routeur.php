@@ -54,14 +54,7 @@ class Routeur{
   public static function getInstance(){
     // Si aucune instance n'existe
     if(is_null(self::$instance)){
-      try{
-        // On essaye de la créer
-        self::$instance = new self();
-      }
-      catch(Exception $e){
-        // On capture une éventuelle erreur
-        echo $e;
-      }
+      self::$instance = new self();
     }
     // On retourne l'instance de Routeur
     return self::$instance;
@@ -78,25 +71,26 @@ class Routeur{
    */
   public function charge($url, $data = null){
     // On récupère les informations de la page
-    $infos = $this->getPage($url);
+    if(($infos = $this->getPage($url)) != null){
 
-    // On définit notre controlleur
-    $controlleur = new $infos['controlleur']();
-    $controlleur->setData($data); // Pour les données POST et GET
+      // On définit notre controlleur
+      $controlleur = new $infos['controlleur']();
+      $controlleur->setData($data); // Pour les données POST et GET
 
-    // On récupère la méthode est les paramètres de la route
-    $methode = $infos['methode'];
-    $params = $infos['params'];
+      // On récupère la méthode est les paramètres de la route
+      $methode = $infos['methode'];
+      $params = $infos['params'];
 
-    // On stock tout ça en global
-    $global = Glob::getInstance();
-    $global->route        = $infos['route'];
-    $global->controlleur  = $infos['controlleur'];
-    $global->methode      = $infos['methode'];
-    $global->arguments    = $infos['params'];
+      // On stock tout ça en global
+      $global = Glob::getInstance();
+      $global->route        = $infos['route'];
+      $global->controlleur  = $infos['controlleur'];
+      $global->methode      = $infos['methode'];
+      $global->arguments    = $infos['params'];
 
-    // On appelle la méthode du controlleur avec les paramètres
-    call_user_func_array(array($controlleur, $methode), $params);
+      // On appelle la méthode du controlleur avec les paramètres
+      call_user_func_array(array($controlleur, $methode), $params);
+    }
     return null;
   }
 
@@ -106,6 +100,7 @@ class Routeur{
    * @param string $route Router à charger
    *
    * @return void
+   * @codeCoverageIgnore
    */
   public static function redirect($route){
     $route = URL_HOST.$route;
@@ -131,27 +126,16 @@ class Routeur{
     // On initialise les routes à null
     $routes = array();
 
-    try{
-      // On récupère le type de fichier
-      $elements = explode('.', $fichier);
-      $type     = end($elements);
-      // On parse le fichier en entrée selon son type
-      switch($type){
-        case 'yml':
-          // TODO YAML file
-          break;
+    // On récupère le type de fichier
+    $elements = explode('.', $fichier);
+    $type     = end($elements);
+    // On parse le fichier en entrée selon son type
+    switch($type){
+      // TODO YAML file
 
-        case 'php':
-          include $fichier;
-          break;
-      }
-    }
-    catch(Exception $e){
-      $f = __FILE__;
-      $l = __LINE__;
-      $m = __METHOD__;
-      $c = __CLASS__;
-      print("Une erreur est survenue dans $c::$m() ($f:$l) : $e\n");
+      case 'php':
+        include $fichier;
+        break;
     }
 
     $this->routes = $routes;

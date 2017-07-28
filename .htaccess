@@ -1,6 +1,7 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  RewriteRule ^cover - [L,NC] 
   RewriteRule ^.*/(.*\.css)$ web/css/$1 [L]
   RewriteRule ^.*images?/(.*)$ web/images/$1 [L]
   RewriteRule ^routeur.php$ routeur.php [L]

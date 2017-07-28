@@ -62,7 +62,10 @@ class Controlleur{
       $$variable = $valeur;
     }
     unset($params);
-    include DOSSIER_VUES.'/'.$page;
+    // On retire l'afficahge pour la console
+    if(php_sapi_name() != 'cli'){
+      include DOSSIER_VUES.'/'.$page;
+    }
   }
 
 }
