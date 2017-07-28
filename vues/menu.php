@@ -8,14 +8,14 @@
   <div class="separateur"></div>
   <div>
     <a href="<?= lien('technologie'); ?>">
-      <img src="images/batiments.png" />
+      <img src="images/technologies.png" />
       Technologies
     </a>
   </div>
   <div class="separateur"></div>
   <div>
     <a href="<?= lien('galaxie/1'); ?>">
-      <img src="images/batiments.png" />
+      <img src="images/galaxie.png" />
       Galaxie
     </a>
   </div>
@@ -29,7 +29,7 @@
   <div class="separateur"></div>
   <div>
     <a href="<?= lien('modele'); ?>">
-      <img src="images/batiments.png" />
+      <img src="images/vaisseaux.png" />
       Modèles
     </a>
   </div>
